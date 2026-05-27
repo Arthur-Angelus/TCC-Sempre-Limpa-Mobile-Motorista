@@ -1,0 +1,1 @@
+export const MASCARA_CEP = [/\d/, /\d/, /\d/, /\d/, /\d/, '-', /\d/, /\d/, /\d/]

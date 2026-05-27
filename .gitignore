@@ -1,0 +1,28 @@
+# Node
+node_modules/
+npm-debug.*
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# macOS
+.DS_Store
+
+# Variáveis de Ambiente
+.env
+.env.local
+.env.*.local
+
+# Arquivos de chaves e certificados (Segurança)
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.keystore
+
+# Arquivos de log e debug
+yarn-debug.log*
+yarn-error.log*
