@@ -4,10 +4,10 @@ import { Platform } from 'react-native';
 
 // Com o 'adb reverse tcp:5000 tcp:5000' ativo, use localhost tranquilamente
 const BASE_URL = "http://localhost:5000/v1/SempreLimpa/";
-const TOKEN_KEY = 'usuario_logado_token';
+const TOKEN_KEY = 'motorista_logado_token';
 
 interface JwtPayload {
-    usuario_id: number;
+    motorista_id: number;
     email: string;
     exp: number;
 }
@@ -131,9 +131,9 @@ export const efetuarLogout = async (): Promise<void> => {
 // ==========================================
 
 export const realizarLogin = async (identificacaoPuro: string, senha: string, metodoEscolhido: string) => {
-    const endpoint = metodoEscolhido === 'e_mail' ? "Loginemail" : "Logincpf";   
+    const endpoint = metodoEscolhido === 'email' ? "Loginemail" : "Logincpf";   
     
-    const payload = metodoEscolhido === 'e_mail'
+    const payload = metodoEscolhido === 'email'
         ? { email: identificacaoPuro, senha }
         : { cpf: identificacaoPuro, senha };
         
@@ -161,7 +161,7 @@ export const realizarLogin = async (identificacaoPuro: string, senha: string, me
 };
 
 export const realizarCadastro = async (payloadParaAPI: any) => {
-    const url = `${BASE_URL}usuario`;
+    const url = `${BASE_URL}motorista`;
 
     const response = await fetch(url, {
         method: "POST",
@@ -180,20 +180,20 @@ export const realizarCadastro = async (payloadParaAPI: any) => {
     return data;
 };
 
-export const buscarPerfilUsuario = async () => {
+export const buscarPerfilMotorista = async () => {
     const token = await obterTokenSalvo();
     if (!token) {
         throw new Error("Nenhum token de autenticação encontrado");
     }
 
     const decoded = jwtDecode<JwtPayload>(token);
-    const idDoUsuario = decoded.usuario_id;
+    const idDomotorista = decoded.motorista_id;
 
-    if (!idDoUsuario) {
-        throw new Error("ID do usuário não encontrado no token");
+    if (!idDomotorista) {
+        throw new Error("ID do motorista não encontrado no token");
     }
 
-    const url = `${BASE_URL}usuario/${idDoUsuario}`; 
+    const url = `${BASE_URL}motorista/${idDomotorista}`; 
 
     const response = await fetch(url, {
         method: "GET",

@@ -50,15 +50,15 @@ export default function CadastroScreen() {
             />
             <InputMascarado 
                 label={textos.input.Email} 
-                tipo='e_mail' 
-                valor={form.e_mail} 
+                tipo='email' 
+                valor={form.email} 
                 aoMudarTexto={(texto) => {
-                    if (texto !== form.e_mail) {
+                    if (texto !== form.email) {
                         form.setEmail(texto);
-                        acoes.limparErro('e_mail');
+                        acoes.limparErro('email');
                     }
                 }}
-                erro={erros.e_mail}
+                erro={erros.email}
             />
             <InputMascarado 
                 label={textos.input.telefone} 

@@ -10,7 +10,7 @@ interface InputMascaradoPropriedades{
     placeholder?: string
     valor: string
     aoMudarTexto: (mascarado: string, puro: string) => void
-    tipo: 'cpf' | 'e_mail' | 'senha' | 'telefone' | 'cep' | 'data' | 'texto'
+    tipo: 'cpf' | 'email' | 'senha' | 'telefone' | 'cep' | 'data' | 'texto'
     editavel?: boolean
     containerStyle?: StyleProp<ViewStyle>
     erro?: string | null
@@ -29,7 +29,7 @@ export default function InputMascarado({ label, placeholder, valor, aoMudarTexto
 
     const definirTeclado = () => {
         if (tipo === 'cpf' || tipo ==='telefone' || tipo === 'cep' || tipo === 'data') return 'numeric'
-        if (tipo === 'e_mail') return 'email-address'
+        if (tipo === 'email') return 'email-address'
         return 'default'
     }
 

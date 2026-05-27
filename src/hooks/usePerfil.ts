@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { buscarPerfilUsuario } from "../services/usuarioService";
+import { buscarPerfilMotorista } from "../services/motoristaService";
 
 
 const formatarDataBR = (dataRaw: string | null | undefined): string => {
@@ -19,7 +19,7 @@ const formatarDataBR = (dataRaw: string | null | undefined): string => {
 
 export function usePerfil() {
 
-    const [usuario, setUsuario] = useState({
+    const [motorista, setMotorista] = useState({
         nome: '',
         email: '',
         telefone: '',
@@ -42,12 +42,12 @@ export function usePerfil() {
             setLoading(true);
             setMensagemErro(null);
     
-            const data = await buscarPerfilUsuario();
+            const data = await buscarPerfilMotorista();
     
-            if (data && data.items && data.items.Usuario && data.items.Usuario.length > 0) {
-                const dadosBanco = data.items.Usuario[0]; 
+            if (data && data.items && data.items.Motorista && data.items.Motorista.length > 0) {
+                const dadosBanco = data.items.Motorista[0]; 
     
-                setUsuario({
+                setMotorista({
                     nome: dadosBanco.nome || '',
                     email: dadosBanco.e_mail || dadosBanco.email || '',
                     telefone: dadosBanco.telefone || '',
@@ -85,7 +85,7 @@ export function usePerfil() {
 
     return {
         form: {
-            usuario,
+            Motorista: motorista,
             loading,
             mensagemErro
         },

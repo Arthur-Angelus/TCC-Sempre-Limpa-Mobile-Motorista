@@ -4,12 +4,12 @@ import { obterTokenSalvo } from './authService';
 import { jwtDecode } from 'jwt-decode';
 
 interface JwtPayload {
-    usuario_id: number;
+    motorista_id: number;
     email: string;
     exp: number;
 }
 
-export const buscarPerfilUsuario = async () => {
+export const buscarPerfilMotorista = async () => {
     const token = await obterTokenSalvo();
 
     if (!token) {
@@ -18,15 +18,15 @@ export const buscarPerfilUsuario = async () => {
 
     const decoded = jwtDecode<JwtPayload>(token);
     console.log("===> PAYLOAD DO JWT DECODIFICADO", decoded);
-    const idDoUsuario = decoded.usuario_id;
-    console.log("===> ID EXTRAÍDO DO TOKEN", idDoUsuario);
+    const idDoMotorista = decoded.motorista_id;
+    console.log("===> ID EXTRAÍDO DO TOKEN", idDoMotorista);
 
-    if (!idDoUsuario) {
-        throw new Error("ID do usuário não encontrado no token.");
+    if (!idDoMotorista) {
+        throw new Error("ID do motorista não encontrado no token.");
     }
 
-    //  CORRIGIDO: Agora usa a BASE_URL e passa o id extraído do token dinamicamente (/usuario/1)
-    const url = `${BASE_URL}usuario/${idDoUsuario}`;
+    //  CORRIGIDO: Agora usa a BASE_URL e passa o id extraído do token dinamicamente (/Motorista/1)
+    const url = `${BASE_URL}motorista/${idDoMotorista}`;
     console.log("=== REQUISIÇÃO ENVIADA PARA:", url);
 
     const response = await fetch(url, {

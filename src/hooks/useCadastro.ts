@@ -10,7 +10,7 @@ export function useCadastro(){
     const [mensagemErro, setMensagemErro] = useState<string | null>(null)
 
     const [nome, setNome] = useState("")
-    const [e_mail, setEmail] = useState("")
+    const [email, setEmail] = useState("")
     const [telefone, setTelefone] = useState("")
     const [dataNascimento, setDataNascimento] = useState("")
     const [cpf, setCpf] = useState("")
@@ -36,7 +36,7 @@ export function useCadastro(){
 
         if (etapaAtual === 1) {
             if(nome.trim().length < 3  || nome.trim().length > 100) novosErros.nome = mensagensDeERRO.preencherCampo.nome
-            if(!validarEmail(e_mail)) novosErros.e_mail = mensagensDeERRO.validacao.emailInvalido
+            if(!validarEmail(email)) novosErros.email = mensagensDeERRO.validacao.emailInvalido
             if(!validarCpf(cpf)) novosErros.cpf =mensagensDeERRO.validacao.cpfInvalido
             if(!validarTelefone(telefone)) novosErros.telefone = mensagensDeERRO.preencherCampo.telefone
             if(!validarMaiorIdade(dataNascimento)) novosErros.dataNascimento =mensagensDeERRO.preencherCampo.idade
@@ -80,7 +80,7 @@ export function useCadastro(){
 
         const payloadParaAPI = {
             nome, 
-            e_mail, 
+            email, 
             telefone: apenasNumeros(telefone),
             cpf: apenasNumeros(cpf),
             data_nascimento: formatarDataParaBanco(dataNascimento),
@@ -147,7 +147,7 @@ export function useCadastro(){
 
     return {
         form:{
-            etapaAtual, mensagemErro, nome, e_mail, telefone, cpf, dataNascimento,
+            etapaAtual, mensagemErro, nome, email, telefone, cpf, dataNascimento,
             setNome, setEmail, setTelefone, setCpf, setDataNascimento,
             cep, rua, numero, complemento, bairro, cidade, estado, buscarCep,
             setCep, setRua, setNumero, setComplemento, setBairro, setCidade, setEstado,

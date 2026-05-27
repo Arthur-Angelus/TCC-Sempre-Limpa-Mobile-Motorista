@@ -4,12 +4,12 @@ import { validarEmail, validarSenha, validarCpf } from "../utils/validacoes";
 import { useState } from "react"; 
 import { realizarLogin } from "../services/authService";
 
-export function useLogin(metodoInicial: 'cpf' | 'e_mail', aoSucesso: () => void){
+export function useLogin(metodoInicial: 'cpf' | 'email', aoSucesso: () => void){
     //Responsavel pela navegação entre páginas
     const navigation = useNavigation<any>()
 
     //Constantes de uso de estado, podendo variar como na primeira constante
-    const [metodoEscolhido] = useState<'cpf' | 'e_mail'>(metodoInicial)
+    const [metodoEscolhido] = useState<'cpf' | 'email'>(metodoInicial)
     const [identificacao, setIdentificacao] = useState('')
     const [identificacaoPuro, setIdentificacaoPuro] = useState('')
     const [senha, setSenha] = useState('')
@@ -23,7 +23,7 @@ export function useLogin(metodoInicial: 'cpf' | 'e_mail', aoSucesso: () => void)
     const lidarComLogin = async () => {
         setMensagemErro(null)
 
-        if(metodoEscolhido === 'e_mail'){
+        if(metodoEscolhido === 'email'){
             if(!validarEmail(identificacaoPuro)){
                 setMensagemErro (mensagensDeERRO.validacao.emailInvalido)
                 return
