@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import { Platform } from 'react-native';
 
 // Com o 'adb reverse tcp:5000 tcp:5000' ativo, use localhost tranquilamente
-const BASE_URL = "http://localhost:5000/v1/SempreLimpa/";
+const BASE_URL = "http://localhost:5000/v1/semprelimpa/";
 const TOKEN_KEY = 'motorista_logado_token';
 
 interface JwtPayload {

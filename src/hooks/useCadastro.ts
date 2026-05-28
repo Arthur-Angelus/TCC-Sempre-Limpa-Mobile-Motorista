@@ -2,18 +2,21 @@ import { useState } from "react";
 import { buscarCepViaCep } from "../services/viaCepService"; 
 import { realizarCadastro } from "../services/authService";
 import { mensagensDeERRO } from "../utils/erros";
-import { apenasNumeros, formatarDataParaBanco, validarCep, validarCpf, validarEmail, validarMaiorIdade, validarSenha, validarTelefone } from "../utils/validacoes";
+import { apenasNumeros, formatarDataParaBanco, validarCep, validarCnh, validarCpf, validarEmail, validarMaiorIdade, validarSenha, validarTelefone } from "../utils/validacoes";
 
 export function useCadastro(){
     const [erros, setErros] = useState<Record<string, string | null>>({})
-    const [etapaAtual, setEtapaAtual] = useState<1 | 2 | 3>(1) 
+    const [etapaAtual, setEtapaAtual] = useState<1 | 2 | 3 | 4>(1) 
     const [mensagemErro, setMensagemErro] = useState<string | null>(null)
 
     const [nome, setNome] = useState("")
-    const [email, setEmail] = useState("")
-    const [telefone, setTelefone] = useState("")
     const [dataNascimento, setDataNascimento] = useState("")
     const [cpf, setCpf] = useState("")
+    const [telefone, setTelefone] = useState("")
+    const [email, setEmail] = useState("")
+    const [cnh, setCnh] = useState("")
+
+
 
     const [cep, setCep] = useState("")
     const [bairro, setBairro] = useState("")
@@ -25,7 +28,7 @@ export function useCadastro(){
     const [buscarCep, setBuscarCep] = useState(false)
 
     const [senha, setSenha] = useState("")
-    const [fotoUri, setFotoUri] = useState<string | null>(null)
+    const [foto, setFoto] = useState<string | null>(null)
 
     const limparErro = (campo: string) => {
         setErros((prev) => ({...prev, [campo]: null}))
@@ -40,6 +43,7 @@ export function useCadastro(){
             if(!validarCpf(cpf)) novosErros.cpf =mensagensDeERRO.validacao.cpfInvalido
             if(!validarTelefone(telefone)) novosErros.telefone = mensagensDeERRO.preencherCampo.telefone
             if(!validarMaiorIdade(dataNascimento)) novosErros.dataNascimento =mensagensDeERRO.preencherCampo.idade
+            if(!validarCnh(cnh)) novosErros.cnh =mensagensDeERRO.validacao.cnhInvalido
             
 
             if(Object.keys(novosErros).length > 0) {
@@ -79,11 +83,14 @@ export function useCadastro(){
         setErros({})
 
         const payloadParaAPI = {
-            nome, 
-            email, 
-            telefone: apenasNumeros(telefone),
-            cpf: apenasNumeros(cpf),
+            nome,
             data_nascimento: formatarDataParaBanco(dataNascimento),
+            cpf: apenasNumeros(cpf),
+            telefone: apenasNumeros(telefone),
+            email,
+            cnh,
+            foto: foto,
+            senha,  
             endereco: { 
                 cep: apenasNumeros(cep), 
                 logradouro: rua, 
@@ -93,8 +100,7 @@ export function useCadastro(){
                 cidade, 
                 uf: estado 
             },
-            senha, 
-            fotoUri
+            
         };
 
         console.log("Payload padronizado para a API:", payloadParaAPI)
@@ -147,11 +153,11 @@ export function useCadastro(){
 
     return {
         form:{
-            etapaAtual, mensagemErro, nome, email, telefone, cpf, dataNascimento,
-            setNome, setEmail, setTelefone, setCpf, setDataNascimento,
+            etapaAtual, mensagemErro, nome, email, telefone, cpf, dataNascimento, cnh,
+            setNome, setEmail, setTelefone, setCpf, setDataNascimento, setCnh,
             cep, rua, numero, complemento, bairro, cidade, estado, buscarCep,
             setCep, setRua, setNumero, setComplemento, setBairro, setCidade, setEstado,
-            senha, fotoUri, setSenha, setFotoUri
+            senha, fotoUri: foto, setSenha, setFotoUri: setFoto
         },
         acoes: {avancarEtapa, voltarEtapa, finalizarCadastro, atualizarCep, limparErro},
         erros

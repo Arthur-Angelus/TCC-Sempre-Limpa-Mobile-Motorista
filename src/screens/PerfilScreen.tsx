@@ -47,6 +47,7 @@ import {
               <Text style={styles.info}>{form.Motorista.telefone}</Text>
               <Text style={styles.info}>{form. Motorista.cpf}</Text>
               <Text style={styles.info}>{form.Motorista.dataNascimento}</Text>
+              <Text style={styles.info}>{form.Motorista.cnh}</Text>
             </View>
     
             <Text style={styles.tituloEndereco}>

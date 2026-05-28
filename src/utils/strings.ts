@@ -36,6 +36,7 @@ export const textos = {
         Email: 'Email',
         telefone: 'Telefone',
         dataNascimento: 'Data de Nascimento',
+        cnh: 'CNH',
         sexo: 'Sexo',
         cep: 'Cep',
         bairro: 'Bairro',

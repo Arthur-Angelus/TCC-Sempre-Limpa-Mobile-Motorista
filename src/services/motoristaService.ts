@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000/v1/SempreLimpa/";
+const BASE_URL = "http://localhost:5000/v1/semprelimpa/";
 
 import { obterTokenSalvo } from './authService';
 import { jwtDecode } from 'jwt-decode';
@@ -41,7 +41,7 @@ export const buscarPerfilMotorista = async () => {
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.mensagemErro || "Erro ao buscar usuário");
+        throw new Error(data.mensagemErro || "Erro ao buscar motorista");
     }
 
     return data;

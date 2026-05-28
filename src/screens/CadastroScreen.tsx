@@ -96,6 +96,18 @@ export default function CadastroScreen() {
                 }}
                 erro={erros.cpf}
             />
+            <InputMascarado 
+                label={textos.input.cnh} 
+                tipo="cnh" 
+                valor={form.cnh} 
+                aoMudarTexto={(cnh) => {
+                    if (cnh !== form.cnh) {
+                        form.setCnh(cnh);
+                        acoes.limparErro('cnh');
+                    }
+                }}
+                erro={erros.cnh}
+            />
         </View>
                 )
             case 2:
@@ -195,7 +207,7 @@ export default function CadastroScreen() {
                             }} 
                             erro={erros.senha}
                         />
-                        <Text style={styles.labelImagem}>Foto de Perfil (Opcional)</Text>
+                        <Text style={styles.labelImagem}>Foto de Perfil (Obrigatorio)</Text>
                         <TouchableOpacity style={styles.botaoUploadImagem} activeOpacity={0.7}>
                             <Text style={styles.textoUpload}>Toque para escolher uma foto</Text>
                         </TouchableOpacity>

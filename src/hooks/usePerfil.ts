@@ -25,6 +25,7 @@ export function usePerfil() {
         telefone: '',
         cpf: '',
         dataNascimento: '',
+        cnh: '',
         cep: '',
         rua: '',
         bairro: '',
@@ -52,6 +53,7 @@ export function usePerfil() {
                     email: dadosBanco.e_mail || dadosBanco.email || '',
                     telefone: dadosBanco.telefone || '',
                     cpf: dadosBanco.cpf || '',
+                    cnh: dadosBanco.cnh || '',
                     
                     // 🛠️ FORMATANDO A DATA NO FRONT PARA GARANTIR:
                     dataNascimento: formatarDataBR(dadosBanco.data_nascimento || dadosBanco.dataNascimento),
@@ -66,10 +68,10 @@ export function usePerfil() {
                     numero: dadosBanco.numero || ''
                 });
     
-                console.log("ESTADO DO USUÁRIO ATUALIZADO COM SUCESSO!");
+                console.log("ESTADO DO MOTORISTA ATUALIZADO COM SUCESSO!");
     
             } else {
-                setMensagemErro("Dados do usuário não encontrados.");
+                setMensagemErro("Dados do motorista não encontrados.");
             }
     
         } catch (error: any) {
