@@ -13,7 +13,7 @@ interface JwtPayload {
 }
 export async function esquecerSenha(email: string) {
     const response = await fetch(
-      'http://localhost:5000/v1/semprelimpa/esquecisenha',
+      'http://localhost:5000/v1/semprelimpa/esquecisenhamotorista',
       {
         method: 'POST',
         headers: {
@@ -37,7 +37,7 @@ export async function esquecerSenha(email: string) {
     novaSenha: string
   ) {
     const response = await fetch(
-      'http://localhost:5000/v1/semprelimpa/resetarsenha',
+      'http://localhost:5000/v1/semprelimpa/resetarsenhamotorista',
       {
         method: 'POST',
         headers: {
@@ -161,7 +161,7 @@ export const realizarLogin = async (identificacaoPuro: string, senha: string, me
 };
 
 export const realizarCadastro = async (payloadParaAPI: any) => {
-    const url = `${BASE_URL}motorista`;
+    const url = `${BASE_URL}motoristacompleto`;
 
     const response = await fetch(url, {
         method: "POST",
