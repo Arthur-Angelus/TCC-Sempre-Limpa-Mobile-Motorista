@@ -131,113 +131,113 @@ export default function CadastroScreen() {
             // ETAPA 3 - BANCO (MOVIDO PRA CÁ)
             // =========================
             case 3:
-    return (
-        <View style={styles.etapaContainer}>
+                return (
+                    <View style={styles.etapaContainer}>
 
-            {/* =========================
+                        {/* =========================
                 BANCO (ENUM)
             ========================= */}
-            <Text style={{ marginBottom: 8, fontWeight: '600' }}>
-                Selecione o banco
-            </Text>
-
-            <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
-                {['nubank', 'picpay', 'mercadopago'].map((item) => (
-                    <TouchableOpacity
-                        key={item}
-                        onPress={() => {
-                            form.setBanco(item);
-                            acoes.limparErro('banco');
-                        }}
-                        style={{
-                            padding: 10,
-                            borderRadius: 8,
-                            backgroundColor: form.banco === item ? colors.primary : '#eee'
-                        }}
-                    >
-                        <Text style={{
-                            color: form.banco === item ? '#fff' : colors.primary,
-                            textTransform: 'capitalize'
-                        }}>
-                            {item}
+                        <Text style={{ marginBottom: 8, fontWeight: '600' }}>
+                            Selecione o banco
                         </Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
 
-            {erros.banco && <Text style={{ color: 'red' }}>{erros.banco}</Text>}
+                        <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
+                            {['nubank', 'picpay', 'mercadopago'].map((item) => (
+                                <TouchableOpacity
+                                    key={item}
+                                    onPress={() => {
+                                        form.setBanco(item);
+                                        acoes.limparErro('banco');
+                                    }}
+                                    style={{
+                                        padding: 10,
+                                        borderRadius: 8,
+                                        backgroundColor: form.banco === item ? colors.primary : '#eee'
+                                    }}
+                                >
+                                    <Text style={{
+                                        color: form.banco === item ? '#fff' : colors.primary,
+                                        textTransform: 'capitalize'
+                                    }}>
+                                        {item}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
 
-            {/* =========================
+                        {erros.banco && <Text style={{ color: 'red' }}>{erros.banco}</Text>}
+
+                        {/* =========================
                 TIPO DE CONTA (ENUM)
             ========================= */}
-            <Text style={{ marginTop: 20, marginBottom: 8, fontWeight: '600' }}>
-                Tipo de conta
-            </Text>
-
-            <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
-                {['corrente', 'salario', 'poupanca'].map((item) => (
-                    <TouchableOpacity
-                        key={item}
-                        onPress={() => {
-                            form.setTipoConta(item);
-                            acoes.limparErro('tipoConta');
-                        }}
-                        style={{
-                            padding: 10,
-                            borderRadius: 8,
-                            backgroundColor: form.tipoConta === item ? colors.primary : '#eee'
-                        }}
-                    >
-                        <Text style={{
-                            color: form.tipoConta === item ? '#fff' : colors.primary,
-                            textTransform: 'capitalize'
-                        }}>
-                            {item}
+                        <Text style={{ marginTop: 20, marginBottom: 8, fontWeight: '600' }}>
+                            Tipo de conta
                         </Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
 
-            {erros.tipoConta && <Text style={{ color: 'red' }}>{erros.tipoConta}</Text>}
+                        <View style={{ flexDirection: 'row', gap: 10, flexWrap: 'wrap' }}>
+                            {['corrente', 'salario', 'poupanca'].map((item) => (
+                                <TouchableOpacity
+                                    key={item}
+                                    onPress={() => {
+                                        form.setTipoConta(item);
+                                        acoes.limparErro('tipoConta');
+                                    }}
+                                    style={{
+                                        padding: 10,
+                                        borderRadius: 8,
+                                        backgroundColor: form.tipoConta === item ? colors.primary : '#eee'
+                                    }}
+                                >
+                                    <Text style={{
+                                        color: form.tipoConta === item ? '#fff' : colors.primary,
+                                        textTransform: 'capitalize'
+                                    }}>
+                                        {item}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
 
-            {/* =========================
+                        {erros.tipoConta && <Text style={{ color: 'red' }}>{erros.tipoConta}</Text>}
+
+                        {/* =========================
                 CAMPOS DE CONTA
             ========================= */}
-            <InputMascarado
-                label="Agência"
-                tipo="texto"
-                valor={form.agencia}
-                aoMudarTexto={(t) => {
-                    form.setAgencia(t);
-                    acoes.limparErro('agencia');
-                }}
-                erro={erros.agencia}
-            />
+                        <InputMascarado
+                            label="Agência"
+                            tipo="texto"
+                            valor={form.agencia}
+                            aoMudarTexto={(t) => {
+                                form.setAgencia(t);
+                                acoes.limparErro('agencia');
+                            }}
+                            erro={erros.agencia}
+                        />
 
-            <InputMascarado
-                label="Conta"
-                tipo="texto"
-                valor={form.conta}
-                aoMudarTexto={(t) => {
-                    form.setConta(t);
-                    acoes.limparErro('conta');
-                }}
-                erro={erros.conta}
-            />
+                        <InputMascarado
+                            label="Conta"
+                            tipo="texto"
+                            valor={form.conta}
+                            aoMudarTexto={(t) => {
+                                form.setConta(t);
+                                acoes.limparErro('conta');
+                            }}
+                            erro={erros.conta}
+                        />
 
-            <InputMascarado
-                label="Dígito"
-                tipo="texto"
-                valor={form.digito}
-                aoMudarTexto={(t) => {
-                    form.setDigito(t);
-                    acoes.limparErro('digito');
-                }}
-                erro={erros.digito}
-            />
+                        <InputMascarado
+                            label="Dígito"
+                            tipo="texto"
+                            valor={form.digito}
+                            aoMudarTexto={(t) => {
+                                form.setDigito(t);
+                                acoes.limparErro('digito');
+                            }}
+                            erro={erros.digito}
+                        />
 
-        </View>
-    );
+                    </View>
+                );
 
             // =========================
             // ETAPA 4 - VEÍCULO + MODALIDADE
@@ -382,41 +382,50 @@ export default function CadastroScreen() {
                             Foto de Perfil (Obrigatório)
                         </Text>
 
-                        <TouchableOpacity style={styles.botaoUploadImagem}>
+                        <TouchableOpacity
+                            style={styles.botaoUploadImagem}
+                            onPress={acoes.escolherFoto}
+                        >
                             <Text style={styles.textoUpload}>
-                                Toque para escolher uma foto
+                                {form.fotoUri ? "Foto selecionada ✓" : "Toque para escolher uma foto"}
                             </Text>
                         </TouchableOpacity>
 
+                        {erros.foto && (
+                            <Text style={{ color: "red", marginTop: 5 }}>
+                                {erros.foto}
+                            </Text>
+                        )}
+
                     </View>
                 );
-        }
+}
     };
 
-    return (
-        <Background>
-            <CabecalhoFixo
-                title={textos.appName}
-                imagemCover={require('../assets/Logo.png')} />
+return (
+    <Background>
+        <CabecalhoFixo
+            title={textos.appName}
+            imagemCover={require('../assets/Logo.png')} />
 
-            <CardAutenticacao
-                titulo={textos.cardAuten.cadastra}
-                onBack={lidarComBotaoVoltar}>
-                <ScrollView
-                    style={styles.scroll}
-                    contentContainerStyle={styles.scrollContent}
-                    keyboardShouldPersistTaps="handled"
-                    showsVerticalScrollIndicator={false}
-                >
-                    {renderizarEtapaAtual()}
-                </ScrollView>
-                <BotaoPadrao
-                    title={form.etapaAtual === 5 ? textos.botao.finalizar : textos.botao.continuar}
-                    onPress={form.etapaAtual === 5 ? lidarComFinalizacao : acoes.avancarEtapa}
-                />
-            </CardAutenticacao>
-        </Background>
-    );
+        <CardAutenticacao
+            titulo={textos.cardAuten.cadastra}
+            onBack={lidarComBotaoVoltar}>
+            <ScrollView
+                style={styles.scroll}
+                contentContainerStyle={styles.scrollContent}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
+            >
+                {renderizarEtapaAtual()}
+            </ScrollView>
+            <BotaoPadrao
+                title={form.etapaAtual === 5 ? textos.botao.finalizar : textos.botao.continuar}
+                onPress={form.etapaAtual === 5 ? lidarComFinalizacao : acoes.avancarEtapa}
+            />
+        </CardAutenticacao>
+    </Background>
+);
 }
 
 const styles = StyleSheet.create({

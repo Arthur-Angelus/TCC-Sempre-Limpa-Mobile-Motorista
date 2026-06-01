@@ -13,8 +13,12 @@ import {
     validarSenha,
     validarTelefone
 } from "../utils/validacoes";
+import * as ImagePicker from "expo-image-picker";
+import { uploadFotoMotorista } from "../services/authService";
 
 type ModalidadeVeiculo = "carro" | "moto" | "bike" | "";
+
+
 
 export function useCadastro() {
 
@@ -147,26 +151,28 @@ export function useCadastro() {
             setEtapaAtual(3);
         }
 
-        // ETAPA 3 - VEÍCULO
+        // ETAPA 3 - BANCO
         else if (etapaAtual === 3) {
-
-            const veic = validarVeiculo();
-            if (veic) return setErros(veic);
-
-            setErros({});
-            setEtapaAtual(4);
-        }
-
-        // ETAPA 4 - BANCO
-        else if (etapaAtual === 4) {
 
             const bancoErr = validarBanco();
             if (bancoErr) return setErros(bancoErr);
 
             setErros({});
+            setEtapaAtual(4);
+        }
+    
+
+        // ETAPA 4 - VEÍCULO
+        else if (etapaAtual === 4) {
+
+            const veic = validarVeiculo();
+            if (veic) return setErros(veic);
+
+            setErros({});
             setEtapaAtual(5);
         }
     };
+        
 
     // =========================
     // FINALIZAR
@@ -258,7 +264,35 @@ export function useCadastro() {
             setBuscarCep(false);
         }
     };
+    const escolherFoto = async () => {
+        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
+        if (!permission.granted) {
+            setErros((prev) => ({
+                ...prev,
+                foto: "Permissão negada para acessar imagens"
+            }));
+            return;
+        }
+
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: 'images',
+            allowsEditing: true,
+            quality: 0.7,
+        });
+
+        if (!result.canceled) {
+            const uri = result.assets[0].uri;
+
+            try {
+                const upload = await uploadFotoMotorista(uri);
+                setFoto(upload.foto); // URL do backend
+                limparErro("foto");
+            } catch (err: any) {
+                setErros((prev) => ({ ...prev, foto: err.message }));
+            }
+        }
+    };
     return {
         form: {
             etapaAtual,
@@ -286,6 +320,7 @@ export function useCadastro() {
         },
 
         acoes: {
+            escolherFoto,
             avancarEtapa,
             voltarEtapa: () => {
                 setErros({});

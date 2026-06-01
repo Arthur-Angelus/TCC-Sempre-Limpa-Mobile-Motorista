@@ -11,6 +11,33 @@ interface JwtPayload {
     email: string;
     exp: number;
 }
+
+
+export const uploadFotoMotorista = async (uri: string) => {
+    const formData = new FormData();
+
+    const file = {
+        uri: uri.startsWith("file://") ? uri : `file://${uri}`,
+        name: "foto.jpg",
+        type: "image/jpeg",
+    } as any;
+
+    formData.append("foto", file);
+
+    const response = await fetch(`${BASE_URL}motorista/upload-foto`, {
+        method: "POST",
+        body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao enviar imagem");
+    }
+
+    return data;
+};
+
 export async function esquecerSenha(email: string) {
     const response = await fetch(
       'http://localhost:5000/v1/semprelimpa/esquecisenhamotorista',
