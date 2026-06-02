@@ -265,31 +265,104 @@ export function useCadastro() {
         }
     };
     const escolherFoto = async () => {
-        const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
+        const permission =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
         if (!permission.granted) {
-            setErros((prev) => ({
-                ...prev,
-                foto: "Permissão negada para acessar imagens"
-            }));
+    
+            setErros(function (valorAnterior) {
+    
+                return {
+                    nome: valorAnterior.nome,
+                    email: valorAnterior.email,
+                    telefone: valorAnterior.telefone,
+                    cpf: valorAnterior.cpf,
+                    dataNascimento: valorAnterior.dataNascimento,
+                    cnh: valorAnterior.cnh,
+                    cep: valorAnterior.cep,
+                    rua: valorAnterior.rua,
+                    bairro: valorAnterior.bairro,
+                    cidade: valorAnterior.cidade,
+                    estado: valorAnterior.estado,
+                    numero: valorAnterior.numero,
+                    complemento: valorAnterior.complemento,
+                    modalidade: valorAnterior.modalidade,
+                    placa: valorAnterior.placa,
+                    modelo: valorAnterior.modelo,
+                    marca: valorAnterior.marca,
+                    anoFabricacao: valorAnterior.anoFabricacao,
+                    anoModelo: valorAnterior.anoModelo,
+                    cor: valorAnterior.cor,
+                    banco: valorAnterior.banco,
+                    agencia: valorAnterior.agencia,
+                    conta: valorAnterior.conta,
+                    digito: valorAnterior.digito,
+                    tipoConta: valorAnterior.tipoConta,
+                    senha: valorAnterior.senha,
+                    geral: valorAnterior.geral,
+                    foto: "Permissão negada para acessar imagens"
+                };
+            });
+    
             return;
         }
-
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: 'images',
-            allowsEditing: true,
-            quality: 0.7,
-        });
-
+    
+        const result =
+            await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                quality: 0.7,
+            });
+    
         if (!result.canceled) {
-            const uri = result.assets[0].uri;
-
+    
+            const asset = result.assets[0];
+    
             try {
-                const upload = await uploadFotoMotorista(uri);
-                setFoto(upload.foto); // URL do backend
+    
+                const upload =
+                    await uploadFotoMotorista(asset);
+    
+                setFoto(upload.foto);
+    
                 limparErro("foto");
+    
             } catch (err: any) {
-                setErros((prev) => ({ ...prev, foto: err.message }));
+    
+                setErros(function (valorAnterior) {
+    
+                    return {
+                        nome: valorAnterior.nome,
+                        email: valorAnterior.email,
+                        telefone: valorAnterior.telefone,
+                        cpf: valorAnterior.cpf,
+                        dataNascimento: valorAnterior.dataNascimento,
+                        cnh: valorAnterior.cnh,
+                        cep: valorAnterior.cep,
+                        rua: valorAnterior.rua,
+                        bairro: valorAnterior.bairro,
+                        cidade: valorAnterior.cidade,
+                        estado: valorAnterior.estado,
+                        numero: valorAnterior.numero,
+                        complemento: valorAnterior.complemento,
+                        modalidade: valorAnterior.modalidade,
+                        placa: valorAnterior.placa,
+                        modelo: valorAnterior.modelo,
+                        marca: valorAnterior.marca,
+                        anoFabricacao: valorAnterior.anoFabricacao,
+                        anoModelo: valorAnterior.anoModelo,
+                        cor: valorAnterior.cor,
+                        banco: valorAnterior.banco,
+                        agencia: valorAnterior.agencia,
+                        conta: valorAnterior.conta,
+                        digito: valorAnterior.digito,
+                        tipoConta: valorAnterior.tipoConta,
+                        senha: valorAnterior.senha,
+                        geral: valorAnterior.geral,
+                        foto: erros.message
+                    };
+                });
             }
         }
     };

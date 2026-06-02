@@ -4,7 +4,7 @@ import Background from '../components/common/Background';
 import BotaoPadrao from '../components/common/BotaoPadrao';
 import InputMascarado from '../components/common/inputMascarado';
 import { textos } from '../utils/strings';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import CardAutenticacao from '../components/tela-login/cadastre-se/CardAutenticacao';
 import { useCadastro } from '../hooks/useCadastro';
@@ -391,6 +391,18 @@ export default function CadastroScreen() {
                             </Text>
                         </TouchableOpacity>
 
+                        {form.fotoUri && (
+                            <Image
+                                source={{ uri: form.fotoUri + '?time=' + new Date().getTime() }}
+                                style={{
+                                    width: '100%',
+                                    height: 160,
+                                    borderRadius: 15,
+                                    marginTop: 10
+                                }}
+                            />
+                        )}
+
                         {erros.foto && (
                             <Text style={{ color: "red", marginTop: 5 }}>
                                 {erros.foto}
@@ -399,33 +411,33 @@ export default function CadastroScreen() {
 
                     </View>
                 );
-}
+        }
     };
 
-return (
-    <Background>
-        <CabecalhoFixo
-            title={textos.appName}
-            imagemCover={require('../assets/Logo.png')} />
+    return (
+        <Background>
+            <CabecalhoFixo
+                title={textos.appName}
+                imagemCover={require('../assets/Logo.png')} />
 
-        <CardAutenticacao
-            titulo={textos.cardAuten.cadastra}
-            onBack={lidarComBotaoVoltar}>
-            <ScrollView
-                style={styles.scroll}
-                contentContainerStyle={styles.scrollContent}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
-            >
-                {renderizarEtapaAtual()}
-            </ScrollView>
-            <BotaoPadrao
-                title={form.etapaAtual === 5 ? textos.botao.finalizar : textos.botao.continuar}
-                onPress={form.etapaAtual === 5 ? lidarComFinalizacao : acoes.avancarEtapa}
-            />
-        </CardAutenticacao>
-    </Background>
-);
+            <CardAutenticacao
+                titulo={textos.cardAuten.cadastra}
+                onBack={lidarComBotaoVoltar}>
+                <ScrollView
+                    style={styles.scroll}
+                    contentContainerStyle={styles.scrollContent}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
+                    {renderizarEtapaAtual()}
+                </ScrollView>
+                <BotaoPadrao
+                    title={form.etapaAtual === 5 ? textos.botao.finalizar : textos.botao.continuar}
+                    onPress={form.etapaAtual === 5 ? lidarComFinalizacao : acoes.avancarEtapa}
+                />
+            </CardAutenticacao>
+        </Background>
+    );
 }
 
 const styles = StyleSheet.create({

@@ -13,26 +13,38 @@ interface JwtPayload {
 }
 
 
-export const uploadFotoMotorista = async (uri: string) => {
+export const uploadFotoMotorista = async (asset: any) => {
+
     const formData = new FormData();
 
-    const file = {
-        uri: uri.startsWith("file://") ? uri : `file://${uri}`,
-        name: "foto.jpg",
-        type: "image/jpeg",
-    } as any;
+    if (Platform.OS === 'web') {
 
-    formData.append("foto", file);
+        formData.append(
+            'foto',
+            asset.file
+        );
 
-    const response = await fetch(`${BASE_URL}motorista/upload-foto`, {
-        method: "POST",
-        body: formData,
-    });
+    } else {
+
+        formData.append('foto', {
+            uri: asset.uri,
+            name: 'foto.jpg',
+            type: 'image/jpeg'
+        } as any);
+    }
+
+    const response = await fetch(
+        `${BASE_URL}motorista/upload-foto`,
+        {
+            method: 'POST',
+            body: formData
+        }
+    );
 
     const data = await response.json();
 
     if (!response.ok) {
-        throw new Error(data.message || "Erro ao enviar imagem");
+        throw new Error(data.message || 'Erro upload');
     }
 
     return data;
