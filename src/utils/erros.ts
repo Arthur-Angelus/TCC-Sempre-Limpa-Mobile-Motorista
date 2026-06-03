@@ -4,7 +4,8 @@ export const mensagensDeERRO = {
         cpfInvalido: "O CPF deve ser um CPF válido",
         senhaFraca: "A senha deve conter: 8 a 12 caracteres, incluindo uma letra maiúscula, um número e um caractere especial.",
         campoObrigatorio: "Este campo não pode ficar vazio.",
-        senhasDiferentes: "As senhas não se condizem, verificar erros de digitação."
+        senhasDiferentes: "As senhas não se condizem, verificar erros de digitação.",
+        cnhInvalido: "A CNH deve ser uma CNH válida"
     },
 
     api: {

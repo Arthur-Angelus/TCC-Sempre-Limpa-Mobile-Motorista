@@ -41,7 +41,7 @@ export default function RecuperacaoSenhaScreen() {
             label="Seu E-mail"
             placeholder="exemplo@email.com"
             valor={form.email}
-            tipo="e_mail"
+            tipo="email"
             aoMudarTexto={(mascarado, puro) => {
               // Como o campo é apenas e-mail, usamos o valor puro.
               form.setEmail(puro);

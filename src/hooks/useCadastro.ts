@@ -1,159 +1,409 @@
 import { useState } from "react";
-import { buscarCepViaCep } from "../services/viaCepService"; 
+import { buscarCepViaCep } from "../services/viaCepService";
 import { realizarCadastro } from "../services/authService";
 import { mensagensDeERRO } from "../utils/erros";
-import { apenasNumeros, formatarDataParaBanco, validarCep, validarCpf, validarEmail, validarMaiorIdade, validarSenha, validarTelefone } from "../utils/validacoes";
+import {
+    apenasNumeros,
+    formatarDataParaBanco,
+    validarCep,
+    validarCnh,
+    validarCpf,
+    validarEmail,
+    validarMaiorIdade,
+    validarSenha,
+    validarTelefone
+} from "../utils/validacoes";
+import * as ImagePicker from "expo-image-picker";
+import { uploadFotoMotorista } from "../services/authService";
 
-export function useCadastro(){
-    const [erros, setErros] = useState<Record<string, string | null>>({})
-    const [etapaAtual, setEtapaAtual] = useState<1 | 2 | 3>(1) 
-    const [mensagemErro, setMensagemErro] = useState<string | null>(null)
+type ModalidadeVeiculo = "carro" | "moto" | "bike" | "";
 
-    const [nome, setNome] = useState("")
-    const [e_mail, setEmail] = useState("")
-    const [telefone, setTelefone] = useState("")
-    const [dataNascimento, setDataNascimento] = useState("")
-    const [cpf, setCpf] = useState("")
 
-    const [cep, setCep] = useState("")
-    const [bairro, setBairro] = useState("")
-    const [rua, setRua] = useState("")
-    const [estado, setEstado] = useState("")
-    const [cidade, setCidade] = useState("")
-    const [complemento, setComplemento] = useState("")
-    const [numero, setNumero] = useState("")
-    const [buscarCep, setBuscarCep] = useState(false)
 
-    const [senha, setSenha] = useState("")
-    const [fotoUri, setFotoUri] = useState<string | null>(null)
+export function useCadastro() {
 
-    const limparErro = (campo: string) => {
-        setErros((prev) => ({...prev, [campo]: null}))
-    }
+    const [erros, setErros] = useState<Record<string, string | null>>({});
+    const [etapaAtual, setEtapaAtual] = useState<1 | 2 | 3 | 4 | 5>(1);
 
-    const avancarEtapa = () => {
-        let novosErros: Record<string, string> = {}
+    // =========================
+    // MOTORISTA
+    // =========================
+    const [nome, setNome] = useState("");
+    const [dataNascimento, setDataNascimento] = useState("");
+    const [cpf, setCpf] = useState("");
+    const [telefone, setTelefone] = useState("");
+    const [email, setEmail] = useState("");
+    const [cnh, setCnh] = useState("");
 
-        if (etapaAtual === 1) {
-            if(nome.trim().length < 3  || nome.trim().length > 100) novosErros.nome = mensagensDeERRO.preencherCampo.nome
-            if(!validarEmail(e_mail)) novosErros.e_mail = mensagensDeERRO.validacao.emailInvalido
-            if(!validarCpf(cpf)) novosErros.cpf =mensagensDeERRO.validacao.cpfInvalido
-            if(!validarTelefone(telefone)) novosErros.telefone = mensagensDeERRO.preencherCampo.telefone
-            if(!validarMaiorIdade(dataNascimento)) novosErros.dataNascimento =mensagensDeERRO.preencherCampo.idade
-            
+    // =========================
+    // ENDEREÇO
+    // =========================
+    const [cep, setCep] = useState("");
+    const [bairro, setBairro] = useState("");
+    const [rua, setRua] = useState("");
+    const [estado, setEstado] = useState("");
+    const [cidade, setCidade] = useState("");
+    const [complemento, setComplemento] = useState("");
+    const [numero, setNumero] = useState("");
+    const [buscarCep, setBuscarCep] = useState(false);
 
-            if(Object.keys(novosErros).length > 0) {
-                setErros(novosErros)
-                return
-            }
+    // =========================
+    // VEÍCULO
+    // =========================
+    const [modalidade, setModalidade] = useState<ModalidadeVeiculo>("");
 
-            setErros({})
-            setEtapaAtual(2)
+    const [placa, setPlaca] = useState("");
+    const [modelo, setModelo] = useState("");
+    const [marca, setMarca] = useState("");
+    const [anoFabricacao, setAnoFabricacao] = useState("");
+    const [anoModelo, setAnoModelo] = useState("");
+    const [cor, setCor] = useState("");
+
+    const veiculoEhCompleto = modalidade === "carro" || modalidade === "moto";
+
+    const validarVeiculo = () => {
+        let e: Record<string, string> = {};
+
+        if (!modalidade) e.modalidade = "Selecione modalidade";
+
+        if (modalidade === "bike") {
+            if (!cor) e.cor = "Cor obrigatória";
+            return Object.keys(e).length ? e : null;
         }
-        else if (etapaAtual === 2) {
-            if(!validarCep(cep)) novosErros.cep = mensagensDeERRO.preencherCampo.cep
-            if(rua.trim() === '') novosErros.rua = mensagensDeERRO.preencherCampo.rua
-            if(numero.trim() === '') novosErros.numero = mensagensDeERRO.preencherCampo.numero
-            if(bairro.trim() === '') novosErros.bairro = mensagensDeERRO.preencherCampo.bairro
-            
-            if (Object.keys(novosErros).length > 0) {
-                setErros(novosErros);
-                return;
-            }
+
+        if (!placa) e.placa = "Placa obrigatória";
+        if (!modelo) e.modelo = "Modelo obrigatório";
+        if (!marca) e.marca = "Marca obrigatória";
+        if (!anoFabricacao) e.anoFabricacao = "Ano fabricação obrigatório";
+        if (!anoModelo) e.anoModelo = "Ano modelo obrigatório";
+        if (!cor) e.cor = "Cor obrigatória";
+
+        return Object.keys(e).length ? e : null;
+    };
+
+    // =========================
+    // DADOS BANCÁRIOS (NOVA ETAPA)
+    // =========================
+    const [banco, setBanco] = useState("");
+    const [agencia, setAgencia] = useState("");
+    const [conta, setConta] = useState("");
+    const [digito, setDigito] = useState("");
+    const [tipoConta, setTipoConta] = useState("");
+
+    const validarBanco = () => {
+        let e: Record<string, string> = {};
+
+        if (!banco) e.banco = "Banco obrigatório";
+        if (!agencia) e.agencia = "Agência obrigatória";
+        if (!conta) e.conta = "Conta obrigatória";
+        if (!digito) e.digito = "Dígito obrigatório";
+        if (!tipoConta) e.tipoConta = "Tipo de conta obrigatório";
+
+        return Object.keys(e).length ? e : null;
+    };
+
+    // =========================
+    // SEGURANÇA (ETAPA 5)
+    // =========================
+    const [senha, setSenha] = useState("");
+    const [foto, setFoto] = useState<string | null>(null);
+
+    // =========================
+    // HELPERS
+    // =========================
+    const limparErro = (campo: string) => {
+        setErros((prev) => ({ ...prev, [campo]: null }));
+    };
+
+    // =========================
+    // AVANÇAR ETAPA
+    // =========================
+    const avancarEtapa = () => {
+
+        let e: Record<string, string> = {};
+
+        // ETAPA 1 - MOTORISTA
+        if (etapaAtual === 1) {
+
+            if (nome.length < 3) e.nome = mensagensDeERRO.preencherCampo.nome;
+            if (!validarEmail(email)) e.email = mensagensDeERRO.validacao.emailInvalido;
+            if (!validarCpf(cpf)) e.cpf = mensagensDeERRO.validacao.cpfInvalido;
+            if (!validarTelefone(telefone)) e.telefone = mensagensDeERRO.preencherCampo.telefone;
+            if (!validarMaiorIdade(dataNascimento)) e.dataNascimento = mensagensDeERRO.preencherCampo.idade;
+
+            if (Object.keys(e).length) return setErros(e);
 
             setErros({});
-            setEtapaAtual(3)
+            setEtapaAtual(2);
         }
-    }
 
+        // ETAPA 2 - ENDEREÇO
+        else if (etapaAtual === 2) {
+
+            if (!validarCep(cep)) e.cep = mensagensDeERRO.preencherCampo.cep;
+            if (!rua) e.rua = "Rua obrigatória";
+            if (!numero) e.numero = "Número obrigatório";
+            if (!bairro) e.bairro = "Bairro obrigatório";
+
+            if (Object.keys(e).length) return setErros(e);
+
+            setErros({});
+            setEtapaAtual(3);
+        }
+
+        // ETAPA 3 - BANCO
+        else if (etapaAtual === 3) {
+
+            const bancoErr = validarBanco();
+            if (bancoErr) return setErros(bancoErr);
+
+            setErros({});
+            setEtapaAtual(4);
+        }
+    
+
+        // ETAPA 4 - VEÍCULO
+        else if (etapaAtual === 4) {
+
+            const veic = validarVeiculo();
+            if (veic) return setErros(veic);
+
+            setErros({});
+            setEtapaAtual(5);
+        }
+    };
+        
+
+    // =========================
+    // FINALIZAR
+    // =========================
     const finalizarCadastro = async () => {
-        let novosErros: Record<string, string> = {};
 
-        if(!validarSenha(senha)) novosErros.senha = mensagensDeERRO.validacao.senhaFraca
+        let e: Record<string, string> = {};
 
-        if (Object.keys(novosErros).length > 0) {
-            setErros(novosErros);
+        if (!validarSenha(senha)) e.senha = "Senha fraca";
+
+        const bancoErr = validarBanco();
+        if (bancoErr) e = { ...e, ...bancoErr };
+
+        const veic = validarVeiculo();
+        if (veic) e = { ...e, ...veic };
+
+        if (Object.keys(e).length) {
+            setErros(e);
             return false;
         }
 
-        setErros({})
-
-        const payloadParaAPI = {
-            nome, 
-            e_mail, 
-            telefone: apenasNumeros(telefone),
-            cpf: apenasNumeros(cpf),
+        const payload = {
+            nome,
             data_nascimento: formatarDataParaBanco(dataNascimento),
-            endereco: { 
-                cep: apenasNumeros(cep), 
-                logradouro: rua, 
-                numero, 
-                complemento, 
-                bairro, 
-                cidade, 
-                uf: estado 
+            cpf: apenasNumeros(cpf),
+            telefone: apenasNumeros(telefone),
+            email,
+            cnh,
+            senha,
+            foto,
+
+            endereco: {
+                cep: apenasNumeros(cep),
+                logradouro: rua,
+                numero,
+                complemento,
+                bairro,
+                cidade,
+                uf: estado
             },
-            senha, 
-            fotoUri
+
+            dadosBancarios: {
+                banco,
+                agencia,
+                conta,
+                digito,
+                tipo_conta: tipoConta
+            },
+
+            veiculo: {
+                modalidade,
+                dados: veiculoEhCompleto
+                    ? { placa, modelo, marca, ano_fabricacao: anoFabricacao, ano_modelo: anoModelo, cor }
+                    : { cor }
+            }
         };
 
-        console.log("Payload padronizado para a API:", payloadParaAPI)
-
         try {
-            const resposta = await realizarCadastro(payloadParaAPI)
-            console.log("Sucesso na criação!", resposta);
-            return true
-        } catch (error: any) {
-            console.error("Erro capturado no finalizarCadastro:", error.message);
-            setErros(prev => ({ ...prev, geral: error.message }));
-        
+            await realizarCadastro(payload);
+            return true;
+        } catch (err: any) {
+            setErros({ geral: err.message });
             return false;
         }
-    }
+    };
 
-    const voltarEtapa = () => {
-        setErros({})
-        if (etapaAtual > 1) {
-            setEtapaAtual((prev) => (prev - 1) as 1| 2 | 3)
-        }
-    }
+    // =========================
+    // CEP
+    // =========================
+    const atualizarCep = async (valor: string) => {
 
-    const atualizarCep = async (cepDigitado: string) => {
-        setCep(cepDigitado)
-        limparErro('cep')
+        setCep(valor);
+        limparErro("cep");
 
-        const cepApenasNumeros = apenasNumeros(cepDigitado)
+        const c = apenasNumeros(valor);
 
-        if(cepApenasNumeros.length === 8) {
-            setBuscarCep(true)
-            setMensagemErro(null)
+        if (c.length === 8) {
+            setBuscarCep(true);
 
-            const endereco = await buscarCepViaCep(cepApenasNumeros)
+            const res = await buscarCepViaCep(c);
 
-            if(endereco){
-                setRua(endereco.logradouro)
-                setBairro(endereco.bairro)
-                setCidade(endereco.localidade)
-                setEstado(endereco.uf)
-
-                setErros((prev) => ({ ...prev, rua: null, bairro: null, cidade: null, estado: null }));
-            } else {
-                setErros((prev) => ({ ...prev, cep: mensagensDeERRO.preencherCampo.cep }));
+            if (res) {
+                setRua(res.logradouro);
+                setBairro(res.bairro);
+                setCidade(res.localidade);
+                setEstado(res.uf);
             }
 
-            setBuscarCep(false)
+            setBuscarCep(false);
         }
-    }
+    };
+    const escolherFoto = async () => {
 
+        const permission =
+            await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+        if (!permission.granted) {
+    
+            setErros(function (valorAnterior) {
+    
+                return {
+                    nome: valorAnterior.nome,
+                    email: valorAnterior.email,
+                    telefone: valorAnterior.telefone,
+                    cpf: valorAnterior.cpf,
+                    dataNascimento: valorAnterior.dataNascimento,
+                    cnh: valorAnterior.cnh,
+                    cep: valorAnterior.cep,
+                    rua: valorAnterior.rua,
+                    bairro: valorAnterior.bairro,
+                    cidade: valorAnterior.cidade,
+                    estado: valorAnterior.estado,
+                    numero: valorAnterior.numero,
+                    complemento: valorAnterior.complemento,
+                    modalidade: valorAnterior.modalidade,
+                    placa: valorAnterior.placa,
+                    modelo: valorAnterior.modelo,
+                    marca: valorAnterior.marca,
+                    anoFabricacao: valorAnterior.anoFabricacao,
+                    anoModelo: valorAnterior.anoModelo,
+                    cor: valorAnterior.cor,
+                    banco: valorAnterior.banco,
+                    agencia: valorAnterior.agencia,
+                    conta: valorAnterior.conta,
+                    digito: valorAnterior.digito,
+                    tipoConta: valorAnterior.tipoConta,
+                    senha: valorAnterior.senha,
+                    geral: valorAnterior.geral,
+                    foto: "Permissão negada para acessar imagens"
+                };
+            });
+    
+            return;
+        }
+    
+        const result =
+            await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                quality: 0.7,
+            });
+    
+        if (!result.canceled) {
+    
+            const asset = result.assets[0];
+    
+            try {
+    
+                const upload =
+                    await uploadFotoMotorista(asset);
+    
+                setFoto(upload.foto);
+    
+                limparErro("foto");
+    
+            } catch (err: any) {
+    
+                setErros(function (valorAnterior) {
+    
+                    return {
+                        nome: valorAnterior.nome,
+                        email: valorAnterior.email,
+                        telefone: valorAnterior.telefone,
+                        cpf: valorAnterior.cpf,
+                        dataNascimento: valorAnterior.dataNascimento,
+                        cnh: valorAnterior.cnh,
+                        cep: valorAnterior.cep,
+                        rua: valorAnterior.rua,
+                        bairro: valorAnterior.bairro,
+                        cidade: valorAnterior.cidade,
+                        estado: valorAnterior.estado,
+                        numero: valorAnterior.numero,
+                        complemento: valorAnterior.complemento,
+                        modalidade: valorAnterior.modalidade,
+                        placa: valorAnterior.placa,
+                        modelo: valorAnterior.modelo,
+                        marca: valorAnterior.marca,
+                        anoFabricacao: valorAnterior.anoFabricacao,
+                        anoModelo: valorAnterior.anoModelo,
+                        cor: valorAnterior.cor,
+                        banco: valorAnterior.banco,
+                        agencia: valorAnterior.agencia,
+                        conta: valorAnterior.conta,
+                        digito: valorAnterior.digito,
+                        tipoConta: valorAnterior.tipoConta,
+                        senha: valorAnterior.senha,
+                        geral: valorAnterior.geral,
+                        foto: erros.message
+                    };
+                });
+            }
+        }
+    };
     return {
-        form:{
-            etapaAtual, mensagemErro, nome, e_mail, telefone, cpf, dataNascimento,
-            setNome, setEmail, setTelefone, setCpf, setDataNascimento,
-            cep, rua, numero, complemento, bairro, cidade, estado, buscarCep,
+        form: {
+            etapaAtual,
+
+            nome, email, telefone, cpf, dataNascimento, cnh,
+            setNome, setEmail, setTelefone, setCpf, setDataNascimento, setCnh,
+
+            cep, rua, numero, complemento, bairro, cidade, estado,
             setCep, setRua, setNumero, setComplemento, setBairro, setCidade, setEstado,
-            senha, fotoUri, setSenha, setFotoUri
+
+            modalidade, setModalidade,
+
+            placa, modelo, marca, anoFabricacao, anoModelo, cor,
+            setPlaca, setModelo, setMarca, setAnoFabricacao, setAnoModelo, setCor,
+
+            banco, agencia, conta, digito, tipoConta,
+            setBanco, setAgencia, setConta, setDigito, setTipoConta,
+
+            senha,
+            fotoUri: foto,
+            setSenha,
+            setFotoUri: setFoto,
+
+            buscarCep
         },
-        acoes: {avancarEtapa, voltarEtapa, finalizarCadastro, atualizarCep, limparErro},
+
+        acoes: {
+            escolherFoto,
+            avancarEtapa,
+            voltarEtapa: () => {
+                setErros({});
+                setEtapaAtual((p) => (p > 1 ? (p - 1) as any : p));
+            },
+            finalizarCadastro,
+            atualizarCep,
+            limparErro
+        },
+
         erros
-    }
+    };
 }

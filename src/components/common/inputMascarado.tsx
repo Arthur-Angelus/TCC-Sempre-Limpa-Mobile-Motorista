@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import {View, Text, StyleSheet, TouchableOpacity, StyleProp, ViewStyle} from 'react-native';
 import MaskInput, {Masks} from "react-native-mask-input";
-import { MASCARA_CEP } from "../../utils/formatadores";
+import { MASCARA_CEP, MASCARA_CNH } from "../../utils/formatadores";
 import { MaterialCommunityIcons} from '@expo/vector-icons';
 import { colors } from "../../theme/colors";
 
@@ -10,7 +10,7 @@ interface InputMascaradoPropriedades{
     placeholder?: string
     valor: string
     aoMudarTexto: (mascarado: string, puro: string) => void
-    tipo: 'cpf' | 'e_mail' | 'senha' | 'telefone' | 'cep' | 'data' | 'texto'
+    tipo: 'cpf' | 'email' | 'senha' | 'telefone' | 'cep' | 'data' | 'texto' | 'cnh'
     editavel?: boolean
     containerStyle?: StyleProp<ViewStyle>
     erro?: string | null
@@ -23,13 +23,14 @@ export default function InputMascarado({ label, placeholder, valor, aoMudarTexto
         if (tipo === 'cpf') return Masks.BRL_CPF
         if (tipo === 'telefone') return Masks.BRL_PHONE
         if (tipo === 'cep') return MASCARA_CEP
+        if (tipo === 'cnh') return MASCARA_CNH
         if (tipo === 'data') return Masks.DATE_DDMMYYYY
         return undefined
     }
 
     const definirTeclado = () => {
-        if (tipo === 'cpf' || tipo ==='telefone' || tipo === 'cep' || tipo === 'data') return 'numeric'
-        if (tipo === 'e_mail') return 'email-address'
+        if (tipo === 'cpf' || tipo ==='telefone' || tipo === 'cep' || tipo === 'data' || tipo === 'cnh') return 'numeric'
+        if (tipo === 'email') return 'email-address'
         return 'default'
     }
 

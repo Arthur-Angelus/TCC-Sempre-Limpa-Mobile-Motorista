@@ -17,7 +17,7 @@ import {
   
       console.log(form)
   
-      if (!form || !form.usuario) {
+      if (!form || !form.Motorista) {
         return (
           <View>
             <Text>Carregando...</Text>
@@ -39,14 +39,15 @@ import {
             </View>
     
             <Text style={styles.nome}>
-              {form.usuario.nome}
+              {form.Motorista.nome}
             </Text>
     
             <View style={styles.informacoesContainer}>
-              <Text style={styles.info}>{form.usuario.email}</Text>
-              <Text style={styles.info}>{form.usuario.telefone}</Text>
-              <Text style={styles.info}>{form. usuario.cpf}</Text>
-              <Text style={styles.info}>{form.usuario.dataNascimento}</Text>
+              <Text style={styles.info}>{form.Motorista.email}</Text>
+              <Text style={styles.info}>{form.Motorista.telefone}</Text>
+              <Text style={styles.info}>{form. Motorista.cpf}</Text>
+              <Text style={styles.info}>{form.Motorista.dataNascimento}</Text>
+              <Text style={styles.info}>{form.Motorista.cnh}</Text>
             </View>
     
             <Text style={styles.tituloEndereco}>
@@ -54,15 +55,15 @@ import {
             </Text>
     
             <View style={styles.informacoesContainer}>
-              <Text style={styles.info}>{form.usuario.cep}</Text>
-              <Text style={styles.info}>{form.usuario.rua}</Text>
-              <Text style={styles.info}>{form.usuario.bairro}</Text>
+              <Text style={styles.info}>{form.Motorista.cep}</Text>
+              <Text style={styles.info}>{form.Motorista.rua}</Text>
+              <Text style={styles.info}>{form.Motorista.bairro}</Text>
               <Text style={styles.info}>
-                {form.usuario.estado} - {form.usuario.cidade}
+                {form.Motorista.estado} - {form.Motorista.cidade}
               </Text>
-              <Text style={styles.info}>{form.usuario.complemento}</Text>
+              <Text style={styles.info}>{form.Motorista.complemento}</Text>
               <Text style={styles.info}>
-                Número {form.usuario.numero}
+                Número {form.Motorista.numero}
               </Text>
             </View>
           </ScrollView>

@@ -70,6 +70,55 @@ export const validarCpf = (cpfStr: string): boolean => {
     return true
 }
 
+export const validarCnh = (cnhStr: string | null): boolean => {
+
+    // Permite null
+    if (cnhStr === null) return true
+
+    const cnh = apenasNumeros(cnhStr)
+
+    if (cnh.length !== 11) return false
+
+    if (/^(\d)\1+$/.test(cnh)) return false
+
+    let soma = 0
+    let dsc = 0
+
+    for (let i = 0, j = 9; i < 9; i++, j--) {
+        soma += parseInt(cnh.charAt(i)) * j
+    }
+
+    let digito1 = soma % 11
+
+    if (digito1 >= 10) {
+        digito1 = 0
+        dsc = 2
+    }
+
+    soma = 0
+
+    for (let i = 0, j = 1; i < 9; i++, j++) {
+        soma += parseInt(cnh.charAt(i)) * j
+    }
+
+    let digito2 = soma % 11
+
+    if (digito2 >= 10) {
+        digito2 = 0
+    }
+
+    digito2 = digito2 - dsc
+
+    if (digito2 < 0) {
+        digito2 += 11
+    }
+
+    return (
+        digito1 === parseInt(cnh.charAt(9)) &&
+        digito2 === parseInt(cnh.charAt(10))
+    )
+}
+
 export const validarCep = (cepStr: string): boolean => {
     return apenasNumeros(cepStr).length === 8
 }

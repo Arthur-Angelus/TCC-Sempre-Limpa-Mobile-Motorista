@@ -3,17 +3,56 @@ import { jwtDecode } from 'jwt-decode';
 import { Platform } from 'react-native';
 
 // Com o 'adb reverse tcp:5000 tcp:5000' ativo, use localhost tranquilamente
-const BASE_URL = "http://localhost:5000/v1/SempreLimpa/";
-const TOKEN_KEY = 'usuario_logado_token';
+const BASE_URL = "http://localhost:5000/v1/semprelimpa/";
+const TOKEN_KEY = 'motorista_logado_token';
 
 interface JwtPayload {
-    usuario_id: number;
+    motorista_id: number;
     email: string;
     exp: number;
 }
+
+
+export const uploadFotoMotorista = async (asset: any) => {
+
+    const formData = new FormData();
+
+    if (Platform.OS === 'web') {
+
+        formData.append(
+            'foto',
+            asset.file
+        );
+
+    } else {
+
+        formData.append('foto', {
+            uri: asset.uri,
+            name: 'foto.jpg',
+            type: 'image/jpeg'
+        } as any);
+    }
+
+    const response = await fetch(
+        `${BASE_URL}motorista/upload-foto`,
+        {
+            method: 'POST',
+            body: formData
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || 'Erro upload');
+    }
+
+    return data;
+};
+
 export async function esquecerSenha(email: string) {
     const response = await fetch(
-      'http://localhost:5000/v1/semprelimpa/esquecisenha',
+      'http://localhost:5000/v1/semprelimpa/esquecisenhamotorista',
       {
         method: 'POST',
         headers: {
@@ -37,7 +76,7 @@ export async function esquecerSenha(email: string) {
     novaSenha: string
   ) {
     const response = await fetch(
-      'http://localhost:5000/v1/semprelimpa/resetarsenha',
+      'http://localhost:5000/v1/semprelimpa/resetarsenhamotorista',
       {
         method: 'POST',
         headers: {
@@ -131,9 +170,9 @@ export const efetuarLogout = async (): Promise<void> => {
 // ==========================================
 
 export const realizarLogin = async (identificacaoPuro: string, senha: string, metodoEscolhido: string) => {
-    const endpoint = metodoEscolhido === 'e_mail' ? "Loginemail" : "Logincpf";   
+    const endpoint = metodoEscolhido === 'email' ? "Loginemail" : "Logincpf";   
     
-    const payload = metodoEscolhido === 'e_mail'
+    const payload = metodoEscolhido === 'email'
         ? { email: identificacaoPuro, senha }
         : { cpf: identificacaoPuro, senha };
         
@@ -161,7 +200,7 @@ export const realizarLogin = async (identificacaoPuro: string, senha: string, me
 };
 
 export const realizarCadastro = async (payloadParaAPI: any) => {
-    const url = `${BASE_URL}usuario`;
+    const url = `${BASE_URL}motoristacompleto`;
 
     const response = await fetch(url, {
         method: "POST",
@@ -173,6 +212,8 @@ export const realizarCadastro = async (payloadParaAPI: any) => {
 
     const data = await response.json();
 
+   console.log(data)
+
     if (!response.ok) {
         throw new Error(data.mensagemErro || "Erro ao fazer cadastro");
     }
@@ -180,20 +221,20 @@ export const realizarCadastro = async (payloadParaAPI: any) => {
     return data;
 };
 
-export const buscarPerfilUsuario = async () => {
+export const buscarPerfilMotorista = async () => {
     const token = await obterTokenSalvo();
     if (!token) {
         throw new Error("Nenhum token de autenticação encontrado");
     }
 
     const decoded = jwtDecode<JwtPayload>(token);
-    const idDoUsuario = decoded.usuario_id;
+    const idDomotorista = decoded.motorista_id;
 
-    if (!idDoUsuario) {
-        throw new Error("ID do usuário não encontrado no token");
+    if (!idDomotorista) {
+        throw new Error("ID do motorista não encontrado no token");
     }
 
-    const url = `${BASE_URL}usuario/${idDoUsuario}`; 
+    const url = `${BASE_URL}motorista/${idDomotorista}`; 
 
     const response = await fetch(url, {
         method: "GET",
