@@ -212,6 +212,8 @@ export const realizarCadastro = async (payloadParaAPI: any) => {
 
     const data = await response.json();
 
+   console.log(data)
+
     if (!response.ok) {
         throw new Error(data.mensagemErro || "Erro ao fazer cadastro");
     }
