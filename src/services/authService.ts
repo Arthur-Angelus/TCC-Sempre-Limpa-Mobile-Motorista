@@ -170,7 +170,7 @@ export const efetuarLogout = async (): Promise<void> => {
 // ==========================================
 
 export const realizarLogin = async (identificacaoPuro: string, senha: string, metodoEscolhido: string) => {
-    const endpoint = metodoEscolhido === 'email' ? "Loginemail" : "Logincpf";   
+    const endpoint = metodoEscolhido === 'email' ? "loginemailmotorista" : "logincpfmotorista";   
     
     const payload = metodoEscolhido === 'email'
         ? { email: identificacaoPuro, senha }
@@ -234,7 +234,7 @@ export const buscarPerfilMotorista = async () => {
         throw new Error("ID do motorista não encontrado no token");
     }
 
-    const url = `${BASE_URL}motorista/${idDomotorista}`; 
+    const url = `${BASE_URL}motoristacompleto/${idDomotorista}`; 
 
     const response = await fetch(url, {
         method: "GET",
@@ -245,6 +245,8 @@ export const buscarPerfilMotorista = async () => {
     });
 
     const data = await response.json();
+
+    console.log("RESPOSTA PERFIL:", JSON.stringify(data, null, 2));
 
     if (!response.ok) {
         throw new Error(data.mensagemErro || "Erro ao buscar dados do perfil");
