@@ -7,7 +7,7 @@ import { textos } from "../../utils/strings";
 interface BottomSheetLoginPropriedades {
     visivel: boolean,
     aoFechar: () => void,
-    aoSelecionarMetodo: (metodo: 'cpf' | 'e_mail') => void;
+    aoSelecionarMetodo: (metodo: 'cpf' | 'email') => void;
 }
 
 export default function BottomSheetlogin({ visivel, aoFechar, aoSelecionarMetodo}: BottomSheetLoginPropriedades){
@@ -47,7 +47,7 @@ export default function BottomSheetlogin({ visivel, aoFechar, aoSelecionarMetodo
                                   backgroundColor="transparent"
                                   textColor={colors.primary}
                                   borderColor={colors.primary}
-                                  onPress={() => aoSelecionarMetodo('e_mail')}
+                                  onPress={() => aoSelecionarMetodo('email')}
                                 />
                             </View>
 
