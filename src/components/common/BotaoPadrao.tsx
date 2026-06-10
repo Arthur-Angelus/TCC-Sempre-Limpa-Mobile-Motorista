@@ -1,18 +1,20 @@
 
-import React from "react";
-import { Text, StyleSheet, TouchableOpacity} from 'react-native';
+import React, { ReactNode } from "react";
+import { Text, StyleSheet, TouchableOpacity, View, StyleProp, ViewStyle } from 'react-native';
 import { colors } from "../../theme/colors";
 
 //Essa é uma forma de criação de um componente em react native: interface é o que é/será a interface do objeto
 
 //Esse é o padrão ao se criar esse componente: uma string, uma funcao de ação ao clicar no botao, e opcionalmente um disable
-interface BotaoPadraoPropriedades{
+interface BotaoPadraoPropriedades {
     title: string;
     onPress: () => void;
     disabled?: boolean;
     backgroundColor?: string;
     textColor?: string;
-    borderColor?: string
+    borderColor?: string;
+    icon?: ReactNode;
+    style?: StyleProp<ViewStyle>
 }
 
 /*
@@ -24,23 +26,28 @@ export default function BotaoPadrao({
     disabled = false,
     backgroundColor = colors.primary,
     textColor = colors.defaultText,
-    borderColor
+    borderColor,
+    icon,
+    style
 }: BotaoPadraoPropriedades) {
-    return(
+    return (
         <TouchableOpacity
         style={[
             styles.button,
             { backgroundColor: backgroundColor},
             borderColor ? { borderWidth: 1, borderColor: borderColor} : null,
-
-            disabled && styles.disabledButton
+            disabled && styles.disabledButton,
+            style
         ]}
         onPress={onPress}
         disabled={disabled}
         >
-            <Text style={[styles.text, {color: textColor}]}>
-                {title}
-            </Text>
+            <View style={styles.content}>
+                {icon}
+                <Text style={[styles.text, {color: textColor}]}>
+                    {title}
+                </Text>
+            </View>
         </TouchableOpacity>
     )
 }
@@ -53,12 +60,18 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%'
     },
-    disabledButton:{
+    disabledButton: {
         opacity: 0.7
     },
     text: {
         fontSize: 16,
         color: colors.defaultText,
         fontWeight: 'bold'
+    },
+    content: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8
     }  
 })

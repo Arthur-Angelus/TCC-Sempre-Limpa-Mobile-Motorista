@@ -134,11 +134,19 @@ export const obterTokenSalvo = async (): Promise<string | null> => {
 export const verificarSeEstaLogado = async (): Promise<boolean> => {
     try {
         const token = await obterTokenSalvo();
-        
+
+        console.log("TOKEN ENCONTRADO:", token);
+
         if (!token) return false;
-        
+
         const decoded = jwtDecode<JwtPayload>(token);
+
+        console.log("JWT:", decoded);
+
         const tempoAtual = Date.now() / 1000;
+
+        console.log("EXP:", decoded.exp);
+        console.log("AGORA:", tempoAtual);
 
         if (decoded.exp < tempoAtual) {
             console.warn("Sessão expirada.");
@@ -148,6 +156,7 @@ export const verificarSeEstaLogado = async (): Promise<boolean> => {
 
         return true;
     } catch (error) {
+        console.log(error);
         return false;
     }
 };
@@ -162,6 +171,21 @@ export const efetuarLogout = async (): Promise<void> => {
     } catch (error) {
         console.error("Erro ao efetuar logout:", error);
     }
+};
+
+export const obterMotoristaLogado = async () => {
+    const token = await obterTokenSalvo();
+
+    if (!token) {
+        throw new Error("Motorista não autenticado");
+    }
+
+    const decoded = jwtDecode<JwtPayload>(token);
+
+    return {
+        motorista_id: decoded.motorista_id,
+        email: decoded.email
+    };
 };
 
 
@@ -254,3 +278,166 @@ export const buscarPerfilMotorista = async () => {
 
     return data;
 };
+
+export const atualizarEndereco = async (enderecoMotoristaId: number, dadosEndereco: any) => {
+    if (!enderecoMotoristaId) {
+        throw new Error("ID do endereço inválido")
+    }
+
+    const token = await obterTokenSalvo()
+
+    if (!token) {
+        throw new Error("Token não encontrado")
+    }
+
+    const response = await fetch(`${BASE_URL}enderecomotorista/${enderecoMotoristaId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(dadosEndereco)
+    })
+
+    const data = await response.json()
+
+    console.log("STATUS:", response.status)
+    console.log("RESPOSTA:", data)
+
+    if (!response.ok) {
+        throw new Error(data.message || data.mensagemErro || "Erro ao atualizar endereço")
+    }
+
+    return data
+};
+
+export const atualizarDadosBancarios = async (dadosBancariosId: number, dadosBancarios: any) => {
+    if (!dadosBancariosId) {
+        throw new Error("ID dos dados bancarios inválido")
+    }
+
+    const token = await obterTokenSalvo()
+
+    if (!token) {
+        throw new Error("Token não encontrado")
+    }
+
+    const response = await fetch(`${BASE_URL}dados_bancarios/${dadosBancariosId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(dadosBancarios)
+    })
+
+    const data = await response.json()
+
+    console.log("STATUS:", response.status)
+    console.log("RESPOSTA:", data)
+
+    if (!response.ok) {
+        throw new Error(data.message || data.mensagemErro || "Erro ao atualizar dados bancarios")
+    }
+
+    return data
+};
+
+export const atualizarVeiculo = async (veiculoId: number, dadosVeiculo: any) => {
+    if (!veiculoId) {
+        throw new Error("ID do veiculo inválido")
+    }
+
+    const token = await obterTokenSalvo()
+
+    if (!token) {
+        throw new Error("Token não encontrado")
+    }
+
+    const response = await fetch(`${BASE_URL}veiculo/${veiculoId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(dadosVeiculo)
+    })
+
+    const data = await response.json()
+
+    console.log("STATUS:", response.status)
+    console.log("RESPOSTA:", data)
+
+    if (!response.ok) {
+        throw new Error(data.message || data.mensagemErro || "Erro ao atualizar veiculo")
+    }
+
+    return data
+};
+
+export const atualizarDadosVeiculo = async (dadosVeiculoId: number, dadosVeiculo: any) => {
+    if (!dadosVeiculoId) {
+        throw new Error("ID do dados do veiculo inválido")
+    }
+
+    const token = await obterTokenSalvo()
+
+    if (!token) {
+        throw new Error("Token não encontrado")
+    }
+
+    const response = await fetch(`${BASE_URL}dados_veiculo/${dadosVeiculoId}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(dadosVeiculo)
+    })
+
+    const data = await response.json()
+
+    console.log("STATUS:", response.status)
+    console.log("RESPOSTA:", data)
+
+    if (!response.ok) {
+        throw new Error(data.message || data.mensagemErro || "Erro ao atualizar dados do veiculo")
+    }
+
+    return data
+};
+
+export const atualizarPerfilMotorista = async (dadosPerfil: any) => {
+    const token = await obterTokenSalvo()
+
+    if (!token) {
+        throw new Error("Token não encontrado")
+    }
+
+    const decoded = jwtDecode<JwtPayload>(token)
+    const idDoMotorista = decoded.motorista_id
+
+    if (!idDoMotorista) {
+        throw new Error("ID do motorista não encontrado no token")
+    }
+
+    const response = await fetch(`${BASE_URL}motorista/${idDoMotorista}`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(dadosPerfil)
+    })
+
+    const data = await response.json()
+
+    console.log("STATUS:", response.status)
+    console.log("RESPOSTA:", data)
+
+    if (!response.ok) {
+        throw new Error(data.message || data.mensagemErro || "Erro ao atualizar perfil")
+    }
+
+    return data
+}
