@@ -68,6 +68,7 @@ export function usePerfil() {
                 uf: m.uf,
 
                 // banco
+                dados_bancarios_id: m.dados_bancarios_id,
                 banco: m.banco,
                 tipo_conta: m.tipo_conta,
                 agencia: m.agencia,
@@ -75,7 +76,9 @@ export function usePerfil() {
                 digito: m.digito,
 
                 // veículo
+                veiculo_id: m.veiculo_id,
                 modalidade: m.modalidade,
+                dados_veiculo_id: m.dados_veiculo_id,
                 marca: m.marca,
                 modelo: m.modelo,
                 placa: m.placa,
