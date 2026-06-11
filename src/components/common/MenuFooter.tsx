@@ -6,7 +6,7 @@ import { useNavigation } from "@react-navigation/native";
 
 
 interface menuFooterPropriedades{  
-    telaAtual: 'Home' | 'Lavanderias' | 'Pedidos' | 'Perfil';
+    telaAtual: 'Home' | 'Acompanhamento' | 'Extrato' | 'Perfil';
 }
 
 export default function menuFooter({
@@ -43,8 +43,8 @@ export default function menuFooter({
     return (
         <View>
             {renderizarBotao('Inicio', 'home', 'Início')}
-            {renderizarBotao('Lavanderias', 'washing-machine', 'Lavanderias')}
-            {renderizarBotao('Pedidos', 'clipboard-text', 'Pedidos')}
+            {renderizarBotao('Acompanhamento', 'washing-machine', 'Acompanhamento')}
+            {renderizarBotao('Extrato', 'clipboard-text', 'Extrato')}
             {renderizarBotao('Perfil', 'account', 'Perfil')}
         </View>
     )

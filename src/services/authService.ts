@@ -441,3 +441,71 @@ export const atualizarPerfilMotorista = async (dadosPerfil: any) => {
 
     return data
 }
+
+export const atualizarStatusMotorista = async (
+    status: 'OFFLINE' | 'DISPONIVEL' | 'OCUPADO'
+) => {
+    const token = await obterTokenSalvo();
+
+    if (!token) {
+        throw new Error("Token não encontrado");
+    }
+
+    const decoded = jwtDecode<JwtPayload>(token);
+    const idMotorista = decoded.motorista_id;
+
+    const response = await fetch(
+        `${BASE_URL}motoristastatus/${idMotorista}`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ status_motorista: status })
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao atualizar status");
+    }
+
+    return data;
+};
+
+export const atualizarLocalizacaoMotorista = async (coords: {
+    latitude: number;
+    longitude: number;
+}) => {
+    const token = await obterTokenSalvo();
+
+    if (!token) {
+        throw new Error("Token não encontrado");
+    }
+
+    const decoded = jwtDecode<JwtPayload>(token);
+    const idMotorista = decoded.motorista_id;
+
+    const response = await fetch(`${BASE_URL}localizacao`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            fk_motorista_id: idMotorista,
+            latitude: coords.latitude,
+            longitude: coords.longitude
+        })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao atualizar localização");
+    }
+
+    return data;
+};
