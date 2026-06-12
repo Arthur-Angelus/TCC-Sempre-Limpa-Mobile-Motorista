@@ -5,26 +5,37 @@ import { colors } from "../../theme";
 interface Props {
     status: 'OFFLINE' | 'DISPONIVEL' | 'OCUPADO';
     onPress: () => void;
+    disabled?: boolean; 
 }
 
-export default function BotaoStatusMotorista({ status, onPress }: Props) {
+export default function BotaoStatusMotorista({ status, onPress, disabled }: Props) {
 
     const isOnline = status === 'DISPONIVEL';
+    const isOcupado = status === 'OCUPADO';
 
     return (
         <TouchableOpacity
             onPress={onPress}
             activeOpacity={0.85}
+            disabled={disabled || isOcupado} // 👈 BLOQUEIA OCUPADO
             style={[
                 styles.button,
-                isOnline ? styles.online : styles.offline
+                isOcupado && styles.ocupado,
+                isOnline && styles.online,
+                !isOnline && !isOcupado && styles.offline,
+                (disabled || isOcupado) && styles.disabled
             ]}
         >
             <Text style={[
                 styles.text,
-                isOnline ? styles.textOnline : styles.textOffline
+                isOnline && styles.textOnline,
+                (!isOnline || isOcupado) && styles.textOffline
             ]}>
-                {isOnline ? "Disponível" : "Ficar Online"}
+                {isOcupado
+                    ? "Em corrida"
+                    : isOnline
+                        ? "Disponível"
+                        : "Ficar Online"}
             </Text>
         </TouchableOpacity>
     );
@@ -43,6 +54,13 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 6,
         elevation: 2,
+    },
+    disabled: {
+        opacity: 0.5,
+    },
+    
+    ocupado: {
+        backgroundColor: "#FFB020", // laranja estilo Uber/iFood
     },
 
     // 🔴 OFFLINE (modo neutro)

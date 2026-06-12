@@ -509,3 +509,112 @@ export const atualizarLocalizacaoMotorista = async (coords: {
 
     return data;
 };
+
+export const buscarPedidosDisponiveis = async () => {
+    const token = await obterTokenSalvo();
+
+    const response = await fetch(`${BASE_URL}pedidodisponivel`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao buscar pedidos disponíveis");
+    }
+
+    return data;
+};
+
+export const aceitarPedido = async (pedido_id: number) => {
+    const token = await obterTokenSalvo();
+    const decoded = jwtDecode<JwtPayload>(token!);
+
+    const response = await fetch(`${BASE_URL}pedidoaceitar/${pedido_id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            motorista_id: decoded.motorista_id
+        })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao aceitar pedido");
+    }
+
+    return data;
+};
+
+export const recusarPedido = async (pedido_id: number) => {
+    const token = await obterTokenSalvo();
+    const decoded = jwtDecode<JwtPayload>(token!);
+
+    const response = await fetch(`${BASE_URL}pedidorecusar/${pedido_id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            motorista_id: decoded.motorista_id
+        })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao recusar pedido");
+    }
+
+    return data;
+};
+
+export const finalizarPedido = async (pedido_id: number) => {
+    const token = await obterTokenSalvo();
+
+    const response = await fetch(`${BASE_URL}pedidofinalizar/${pedido_id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao finalizar pedido");
+    }
+
+    return data;
+};
+
+export const buscarPedidosMotorista = async () => {
+    const token = await obterTokenSalvo();
+    const decoded = jwtDecode<JwtPayload>(token!);
+
+    const response = await fetch(`${BASE_URL}pedidomotorista/${decoded.motorista_id}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao buscar pedidos do motorista");
+    }
+
+    return data;
+};

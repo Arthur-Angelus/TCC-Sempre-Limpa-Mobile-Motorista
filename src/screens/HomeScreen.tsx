@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Text, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import MapView, { Marker } from "react-native-maps";
+import MapView, { Marker } from "react-native-maps"
+import { useRef } from "react";;
 
 // Importações dos seus componentes customizados (Ajuste os caminhos se necessário)
 import Background from '../components/common/Background';
@@ -20,21 +21,22 @@ import BotãoStatus from "../components/common/BotãoStatus"; //import do botão
 import { useHome } from "../hooks/useHome";
 import { buscarPerfilMotorista } from '../services/authService';
 
+
+
 export function HomeScreen() {
     const navigation = useNavigation<any>();
     const {
         motorista,
         status,
         alterarStatus,
-        iniciarTracking,
-        localizacao
+        localizacao,
+        loading,
+        erro,
+        finalizarCorrida,
+        setOcupado,
+        pedidoAtivo
     } = useHome();
-
-    useEffect(() => {
-        if (status === "DISPONIVEL") {
-            iniciarTracking();
-        }
-    }, [status]);
+    const mapRef = useRef<MapView>(null);
 
     return (
         <Background>
@@ -49,25 +51,28 @@ export function HomeScreen() {
             <View style={styles.statusContainer}>
                 <BotãoStatus
                     status={status}
-                    onPress={() =>
+                    disabled={status === "OCUPADO"}
+                    onPress={() => {
+                        if (status === "OCUPADO") return;
+
+                        // OFFLINE <-> DISPONIVEL
                         alterarStatus(
-                            status === "DISPONIVEL"
-                                ? "OFFLINE"
-                                : "DISPONIVEL"
-                        )
-                    }
+                            status === "DISPONIVEL" ? "OFFLINE" : "DISPONIVEL"
+                        );
+                    }}
                 />
             </View>
 
             {/* 🗺️ MAPA CONDICIONAL */}
-            {status === "DISPONIVEL" && (
+            {(status === "DISPONIVEL" || status === "OCUPADO") && (
                 <View style={styles.mapaContainer}>
 
                     <MapView
+                        ref={mapRef}
                         style={{ flex: 1, width: "100%" }}
                         showsUserLocation={true}
                         followsUserLocation={true}
-                        region={
+                        initialRegion={
                             localizacao
                                 ? {
                                     latitude: localizacao.latitude,
@@ -80,6 +85,27 @@ export function HomeScreen() {
                     >
                         {localizacao && (
                             <Marker coordinate={localizacao} title="Você está aqui" />
+                        )}
+                        {pedidoAtivo?.origem && (
+                            <Marker
+                                coordinate={{
+                                    latitude: pedidoAtivo.origem.latitude,
+                                    longitude: pedidoAtivo.origem.longitude,
+                                }}
+                                title="Coleta"
+                                pinColor="blue"
+                            />
+                        )}
+
+                        {pedidoAtivo?.destino && (
+                            <Marker
+                                coordinate={{
+                                    latitude: pedidoAtivo.destino.latitude,
+                                    longitude: pedidoAtivo.destino.longitude,
+                                }}
+                                title="Entrega"
+                                pinColor="green"
+                            />
                         )}
                     </MapView>
 
