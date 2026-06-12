@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import { Platform } from 'react-native';
 
 // Com o 'adb reverse tcp:5000 tcp:5000' ativo, use localhost tranquilamente
-const BASE_URL = "http://localhost:5000/v1/semprelimpa/";
+const BASE_URL = "http://10.0.2.2:5000/v1/semprelimpa/";
 const TOKEN_KEY = 'motorista_logado_token';
 
 interface JwtPayload {
@@ -76,7 +76,7 @@ export async function esquecerSenha(email: string) {
     novaSenha: string
   ) {
     const response = await fetch(
-      'http://localhost:5000/v1/semprelimpa/resetarsenhamotorista',
+      '"http://10.0.2.2:5000/v1/semprelimpa/resetarsenhamotorista',
       {
         method: 'POST',
         headers: {

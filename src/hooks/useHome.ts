@@ -56,25 +56,25 @@ export function useHome() {
 
         subscription = await Location.watchPositionAsync(
             {
-                accuracy: Location.Accuracy.High,
-                timeInterval: 5000,
-                distanceInterval: 10
+              accuracy: Location.Accuracy.Highest,
+              timeInterval: 5000,
+              distanceInterval: 10
             },
             async (location) => {
-                if (status_motorista !== "DISPONIVEL") return;
-
-                const coords = {
-                    latitude: location.coords.latitude,
-                    longitude: location.coords.longitude
-                };
-            
-                // 🔥 atualiza estado local (UI / mapa)
-                setLocalizacao(coords);
-            
-                // 🔥 envia pro backend
-                await atualizarLocalizacaoMotorista(coords);
+              if (status_motorista !== "DISPONIVEL") return;
+          
+              const coords = {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              };
+          
+              if (!coords.latitude || !coords.longitude) return;
+          
+              setLocalizacao(coords);
+          
+              await atualizarLocalizacaoMotorista(coords);
             }
-        );
+          );
     }
 
     function pararTracking() {

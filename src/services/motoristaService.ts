@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5000/v1/semprelimpa/";
+const BASE_URL = "http://10.0.2.2:5000/v1/semprelimpa/";
 
 import { obterTokenSalvo } from './authService';
 import { jwtDecode } from 'jwt-decode';
