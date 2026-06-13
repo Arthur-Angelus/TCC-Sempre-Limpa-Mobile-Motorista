@@ -28,7 +28,7 @@ import {
 
 import { buscarCepViaCep } from "../services/viaCepService";
 
-const formatarData = (data) => {
+const formatarData = (data: string) => {
   if (!data) return null
 
   // DD/MM/YYYY

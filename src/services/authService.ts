@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import { Platform } from 'react-native';
 
 // Com o 'adb reverse tcp:5000 tcp:5000' ativo, use localhost tranquilamente
-const BASE_URL = "http://localhost:5000/v1/semprelimpa/";
+const BASE_URL = "http://10.0.2.2:5000/v1/semprelimpa/";
 const TOKEN_KEY = 'motorista_logado_token';
 
 interface JwtPayload {
@@ -76,7 +76,7 @@ export async function esquecerSenha(email: string) {
     novaSenha: string
   ) {
     const response = await fetch(
-      'http://localhost:5000/v1/semprelimpa/resetarsenhamotorista',
+      '"http://10.0.2.2:5000/v1/semprelimpa/resetarsenhamotorista',
       {
         method: 'POST',
         headers: {
@@ -441,3 +441,180 @@ export const atualizarPerfilMotorista = async (dadosPerfil: any) => {
 
     return data
 }
+
+export const atualizarStatusMotorista = async (
+    status: 'OFFLINE' | 'DISPONIVEL' | 'OCUPADO'
+) => {
+    const token = await obterTokenSalvo();
+
+    if (!token) {
+        throw new Error("Token não encontrado");
+    }
+
+    const decoded = jwtDecode<JwtPayload>(token);
+    const idMotorista = decoded.motorista_id;
+
+    const response = await fetch(
+        `${BASE_URL}motoristastatus/${idMotorista}`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ status_motorista: status })
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao atualizar status");
+    }
+
+    return data;
+};
+
+export const atualizarLocalizacaoMotorista = async (coords: {
+    latitude: number;
+    longitude: number;
+}) => {
+    const token = await obterTokenSalvo();
+
+    if (!token) {
+        throw new Error("Token não encontrado");
+    }
+
+    const decoded = jwtDecode<JwtPayload>(token);
+    const idMotorista = decoded.motorista_id;
+
+    const response = await fetch(`${BASE_URL}localizacao`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            fk_motorista_id: idMotorista,
+            latitude: coords.latitude,
+            longitude: coords.longitude
+        })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao atualizar localização");
+    }
+
+    return data;
+};
+
+export const buscarPedidosDisponiveis = async () => {
+    const token = await obterTokenSalvo();
+
+    const response = await fetch(`${BASE_URL}pedidodisponivel`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao buscar pedidos disponíveis");
+    }
+
+    return data;
+};
+
+export const aceitarPedido = async (pedido_id: number) => {
+    const token = await obterTokenSalvo();
+    const decoded = jwtDecode<JwtPayload>(token!);
+
+    const response = await fetch(`${BASE_URL}pedidoaceitar/${pedido_id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            motorista_id: decoded.motorista_id
+        })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao aceitar pedido");
+    }
+
+    return data;
+};
+
+export const recusarPedido = async (pedido_id: number) => {
+    const token = await obterTokenSalvo();
+    const decoded = jwtDecode<JwtPayload>(token!);
+
+    const response = await fetch(`${BASE_URL}pedidorecusar/${pedido_id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+            motorista_id: decoded.motorista_id
+        })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao recusar pedido");
+    }
+
+    return data;
+};
+
+export const finalizarPedido = async (pedido_id: number) => {
+    const token = await obterTokenSalvo();
+
+    const response = await fetch(`${BASE_URL}pedidofinalizar/${pedido_id}`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao finalizar pedido");
+    }
+
+    return data;
+};
+
+export const buscarPedidosMotorista = async () => {
+    const token = await obterTokenSalvo();
+    const decoded = jwtDecode<JwtPayload>(token!);
+
+    const response = await fetch(`${BASE_URL}pedidomotorista/${decoded.motorista_id}`, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.message || "Erro ao buscar pedidos do motorista");
+    }
+
+    return data;
+};

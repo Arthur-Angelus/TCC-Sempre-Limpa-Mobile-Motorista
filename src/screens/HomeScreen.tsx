@@ -1,6 +1,8 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView, Text, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, ScrollView, Text, Image, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import MapView, { Marker } from "react-native-maps"
+import { useRef } from "react";;
 
 // Importações dos seus componentes customizados (Ajuste os caminhos se necessário)
 import Background from '../components/common/Background';
@@ -9,6 +11,7 @@ import CardDashboard from '../components/tela-home/CardDashboard';
 import BotaoPadrao from '../components/common/BotaoPadrao';
 import { colors } from '../theme/colors';
 import CardPedido from "../components/tela-home/CardPedido";
+import BotãoStatus from "../components/common/BotãoStatus"; //import do botão status
 
 // Importação do ícone de adicionar (Ajuste o caminho se necessário)
 // import IconeAdd from '../assets/add-icon.svg'
@@ -18,157 +21,109 @@ import CardPedido from "../components/tela-home/CardPedido";
 import { useHome } from "../hooks/useHome";
 import { buscarPerfilMotorista } from '../services/authService';
 
+
+
 export function HomeScreen() {
     const navigation = useNavigation<any>();
-
-    const { dados, carregando, erro } = useHome();
-    console.log("Dados da HomeScreen:", dados);
-
-    const pedidoAtual = dados.find(
-        pedido => pedido.status_pedido === 'EM_ANDAMENTO'
-    );
-
-    function formatarStatus(status: string) {
-    switch (status) {
-        case 'EM_ANDAMENTO':
-            return 'Andamento';
-
-        case 'PENDENTE':
-            return 'Pendente';
-
-        case 'PAGO':
-            return 'Finalizado';
-
-        case 'FINALIZADO':
-            return 'Finalizado';
-
-        case 'CANCELADO':
-            return 'Cancelado';
-
-        default:
-            return status;
-    }
-}
-
-    // Funções de disparo para testar os cliques dos botões
-    function lidarComNotificacao() {
-        console.log("Sino de notificações pressionado!");
-    }
-
-    function lidarComDetalhesPedido() {
-        console.log("Usuário quer ver detalhes do pedido atual...");
-        // navigation.navigate('DetalhesPedido');
-    }
-
-    function lidarComNovoPedido() {
-        console.log("Iniciando fluxo de novo pedido...");
-        // navigation.navigate('CriarPedido');
-    }
-    const ultimosPedidos = dados
-        .filter(
-            pedido => pedido.status_pedido !== 'EM_ANDAMENTO'
-        )
-        .slice(0, 3);
+    const {
+        motorista,
+        status,
+        alterarStatus,
+        localizacao,
+        loading,
+        erro,
+        finalizarCorrida,
+        setOcupado,
+        pedidoAtivo
+    } = useHome();
+    const mapRef = useRef<MapView>(null);
 
     return (
         <Background>
-            {/* 1. TOPO DO APLICATIVO */}
+
             <HeaderHome
-                nomeUsuario="Guilherme"
-                urlFotoPerfil="" // Deixe vazio para testar a imagem padrão circular
-                onPressNotificacao={lidarComNotificacao}
+                nomeMotorista={motorista?.nome || ""}
+                urlFotoPerfil={motorista?.foto}
+                onPressNotificacao={() => { }}
             />
 
-            {/* Usamos o ScrollView para garantir que o conteúdo role perfeitamente em telas menores */}
-            <ScrollView
-                style={styles.scrollContainer}
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={styles.conteudoEspacamento}
-            >
+            {/* 🔘 BOTÃO STATUS (IFOOD STYLE) */}
+            <View style={styles.statusContainer}>
+                <BotãoStatus
+                    status={status}
+                    disabled={status === "OCUPADO"}
+                    onPress={() => {
+                        if (status === "OCUPADO") return;
 
-                {/* 2. CARD DO DASHBOARD (O Camaleão: Gota vs Folha) */}
-                {/* Passamos dados mocados idênticos ao figma para validar a estrutura visual */}
-                {pedidoAtual ? (
-                    <CardDashboard
-                        numeroPedido={String(pedidoAtual.pedido_id)}
-                        statusTexto="Em processamento"
-                        progresso={50}
-                        mensagem="Sua roupa está sendo lavada."
-                        onVerDetalhes={lidarComDetalhesPedido}
+                        // OFFLINE <-> DISPONIVEL
+                        alterarStatus(
+                            status === "DISPONIVEL" ? "OFFLINE" : "DISPONIVEL"
+                        );
+                    }}
+                />
+            </View>
 
-                        cestosLavados={pedidoAtual.quantidade_cestos}
+            {/* 🗺️ MAPA CONDICIONAL */}
+            {(status === "DISPONIVEL" || status === "OCUPADO") && (
+                <View style={styles.mapaContainer}>
 
-                        reaisEconomizadosTotais="0"
-                        economiaAguaVolume="0L"
-                        economiaAguaReais="R$ 0,00"
-                        economiaEnergiaKw="0 kWh"
-                        economiaEnergiaReais="R$ 0,00"
-                        economiaInsumosReais="R$ 0,00"
-                        tempoPoupado="0h"
-                    />
-                ) : (
-                    <View style={styles.semPedidoAtual}>
-                        <Text style={styles.semPedidoAtualTitulo}>
-                            Nenhum pedido em andamento
-                        </Text>
-
-                        <Text style={styles.semPedidoAtualTexto}>
-                            Quando você realizar uma lavagem, o acompanhamento aparecerá aqui.
-                        </Text>
-                    </View>
-                )}
-
-                {/* 3. ÁREA DE SEÇÃO OU ELEMENTOS EXTRAS */}
-                <View style={styles.secaoAcoes}>
-
-                    <View style={styles.espacadorBotao}>
-                        <BotaoPadrao
-                            // icon={<IconeAdd width={20} height={20} fill="#FFFFFF" />}
-                            title="Solicitar Nova Lavagem"
-                            onPress={lidarComNovoPedido}
-                            backgroundColor={colors.primary || colors.iconAndTextSelectColor}
-                            // style={{ height: 60 }}
-                        />
-                    </View>
-                </View>
-                <View style={styles.ultimosPedidosContainer}>
-                    <View style={styles.tituloSecaoContainer}>
-                        <Text style={styles.ultimosPedidos}>
-                            Últimos Pedidos
-                        </Text>
-                        <Text style={styles.verTodos}>
-                            Ver todos
-                        </Text>
-                    </View>
-                    <View style={styles.ultimosPedidosLista}>
-                        {ultimosPedidos.length > 0 ? (
-                            ultimosPedidos.map((pedido) => (
-                                <CardPedido
-                                    key={pedido.pedido_id}
-                                    // icon={
-                                    //     <IconeCesto
-                                    //         width={24}
-                                    //         height={24}
-                                    //         fill={colors.backgroundGray}
-                                    //     />
-                                    // }
-                                    numeroPedido={String(pedido.pedido_id)}
-                                    data={new Date(
-                                        pedido.data_pedido
-                                    ).toLocaleDateString('pt-BR')}
-                                    quantidadeItens={`${pedido.quantidade_cestos} cestos`}
-                                    status={formatarStatus(pedido.status_pedido)}
-                                />
-                            ))
-                        ) : (
-                            <Text style={styles.nenhumPedido}>
-                                Você ainda não possui nenhum pedido.
-                            </Text>
+                    <MapView
+                        ref={mapRef}
+                        style={{ flex: 1, width: "100%" }}
+                        showsUserLocation={true}
+                        followsUserLocation={true}
+                        initialRegion={
+                            localizacao
+                                ? {
+                                    latitude: localizacao.latitude,
+                                    longitude: localizacao.longitude,
+                                    latitudeDelta: 0.01,
+                                    longitudeDelta: 0.01,
+                                }
+                                : undefined
+                        }
+                    >
+                        {localizacao && (
+                            <Marker coordinate={localizacao} title="Você está aqui" />
                         )}
-                    </View>
-                </View>
+                        {pedidoAtivo?.origem && (
+                            <Marker
+                                coordinate={{
+                                    latitude: pedidoAtivo.origem.latitude,
+                                    longitude: pedidoAtivo.origem.longitude,
+                                }}
+                                title="Coleta"
+                                pinColor="blue"
+                            />
+                        )}
 
-            </ScrollView>
+                        {pedidoAtivo?.destino && (
+                            <Marker
+                                coordinate={{
+                                    latitude: pedidoAtivo.destino.latitude,
+                                    longitude: pedidoAtivo.destino.longitude,
+                                }}
+                                title="Entrega"
+                                pinColor="green"
+                            />
+                        )}
+                    </MapView>
+
+                </View>
+            )}
+
+            {/* 🔴 OFFLINE STATE */}
+            {status === "OFFLINE" && (
+                <View style={styles.offlineContainer}>
+                    <Text style={styles.offlineTexto}>
+                        Você está offline
+                    </Text>
+                    <Text style={styles.offlineSub}>
+                        Ative o modo disponível para receber pedidos
+                    </Text>
+                </View>
+            )}
+
         </Background>
     );
 }
@@ -250,5 +205,44 @@ const styles = StyleSheet.create({
         marginTop: 8,
         textAlign: 'center',
         color: colors.textGray,
+    },
+    statusContainer: {
+        marginTop: 10,
+        alignItems: "center"
+    },
+
+    mapaContainer: {
+        flex: 1,
+        marginTop: 15,
+        borderRadius: 20,
+        backgroundColor: colors.secundaryColorCard,
+        justifyContent: "center",
+        alignItems: "center"
+    },
+
+    mapaTexto: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: colors.textGray
+    },
+
+    offlineContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: 20
+    },
+
+    offlineTexto: {
+        fontSize: 20,
+        fontWeight: "700",
+        color: colors.textGray
+    },
+
+    offlineSub: {
+        marginTop: 8,
+        fontSize: 14,
+        color: colors.textSecundary,
+        textAlign: "center"
     },
 });

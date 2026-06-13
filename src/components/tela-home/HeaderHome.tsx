@@ -5,13 +5,13 @@ import { colors } from "../../theme";
 import {Feather} from '@expo/vector-icons'
 
 interface HeaderHomePropriedades{
-    nomeUsuario: string
+    nomeMotorista: string
     urlFotoPerfil?: string
     onPressNotificacao: () => void
 }
 
 export default function HeaderHome({
-    nomeUsuario,
+    nomeMotorista: nomeUsuario,
     urlFotoPerfil,
     onPressNotificacao
 }: HeaderHomePropriedades) {
